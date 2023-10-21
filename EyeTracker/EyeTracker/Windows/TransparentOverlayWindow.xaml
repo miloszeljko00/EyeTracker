@@ -1,0 +1,16 @@
+﻿<Window x:Class="EyeTracker.Windows.TransparentOverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Transparent Overlay" 
+        WindowStyle="None" 
+        WindowState="Maximized"
+        AllowsTransparency="True"
+        MouseDown="Window_MouseDown"
+        KeyDown="Window_KeyDown"
+        >
+
+    <Window.Background>
+        <SolidColorBrush Color="#33000000" />
+    </Window.Background>
+    <Canvas Name="canvas" />
+</Window>
