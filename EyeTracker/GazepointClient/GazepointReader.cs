@@ -16,6 +16,7 @@ namespace GazepointClient
     {
         public int ServerPort { get; set; }
         public string ServerIp { get; set; }
+        public List<int> ScreenSize { get; set; }  // has to be list because YamlDotNet is stupid
         public List<string> InputSignals { get; set; }
         public Dictionary<string, Dictionary<string, List<string>>> SignalOutputs { get; set; }
     }
