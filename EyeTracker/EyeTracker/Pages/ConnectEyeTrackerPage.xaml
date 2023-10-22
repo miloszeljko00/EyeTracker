@@ -1,0 +1,36 @@
+﻿<Page x:Class="EyeTracker.Pages.ConnectEyeTrackerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:EyeTracker.Pages"
+      xmlns:userControls="clr-namespace:EyeTracker.UserControls"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ConnectEyeTrackerPage">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32">
+            Connect to EyeTracker GP3:
+        </Label>
+
+        <Grid Grid.Row="1" Width="320" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
+            <userControls:TextInputField Grid.Row="0" Placeholder="Address" Text="{Binding EyeTrackerConfig.Address, Mode=TwoWay}"></userControls:TextInputField>
+            <userControls:TextInputField Grid.Row="2" Placeholder="Port" Text="{Binding EyeTrackerConfig.Port, Mode=TwoWay}"></userControls:TextInputField>
+        </Grid>
+
+        <Button Cursor="Hand" Grid.Row="2" Width="240" Height="48" VerticalAlignment="Center" FontSize="18" Click="Button_Click">SUBMIT</Button>
+    </Grid>
+</Page>
