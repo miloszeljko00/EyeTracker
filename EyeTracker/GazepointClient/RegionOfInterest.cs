@@ -17,6 +17,11 @@ namespace GazepointClient
             this.x = x;
             this.y = y;
         }
+
+        public static Point FractionCoordinatesToAbsoluteCoordinates(Point point, List<int> screenSize)
+        {
+            return new Point(screenSize[0] * point.x, screenSize[1] * point.y);
+        }
     }
 
     public class Line
@@ -57,6 +62,23 @@ namespace GazepointClient
             }
 
             return lines;
+        }
+
+        public List<Tuple<Point, Point>> GetSidesAsPointPairs()
+        {
+            var sides = new List<Tuple<Point, Point>>();
+
+            for(int i = 0; i < points.Count; i++)
+            {
+                sides.Add(new Tuple<Point, Point>(points[i], points[(i+1) % points.Count]));
+            }
+
+            return sides;
+        }
+
+        public double GetMinX()
+        {
+            return points.Min(p => p.x);
         }
     }
 }
