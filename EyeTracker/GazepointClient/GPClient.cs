@@ -15,7 +15,7 @@ namespace GazepointClient
     {
         static void Main(string[] args)
         {
-            ConfigReader configReader = new();
+            GazepointReader configReader = new();
 
             int ServerPort = configReader.Configuration.ServerPort;
             string ServerIP = configReader.Configuration.ServerIp;
