@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -9,15 +11,43 @@ namespace EyeTracker.Windows;
 
 public partial class TransparentOverlayWindow : Window
 {
+
+    private List<WindowState> windowStates = new List<WindowState>();
+    private List<Window> minimizedWindows = new List<Window>();
     public TransparentOverlayWindow()
     {
         InitializeComponent();
+        MinimizeOtherWindows();
     }
+
+    private void MinimizeOtherWindows()
+    {
+        // Minimize all other windows
+        foreach (Window window in Application.Current.Windows)
+        {
+            if (window != this && window.WindowState != WindowState.Minimized)
+            {
+                windowStates.Add(window.WindowState);
+                minimizedWindows.Add(window);
+                window.WindowState = WindowState.Minimized;
+            }
+        }
+    }
+    private void CloseWindow()
+    {
+        // Restore minimized windows
+        for (int i = 0; i < minimizedWindows.Count; i++)
+        {
+            minimizedWindows[i].WindowState = windowStates[i];
+        }
+        Close();
+    }
+
     private Point? lastMousePosition = null; // To track the last mouse position
     private Point? firstMousePosition = null; // To track the position of the first dot
 
     private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-    {
+    { 
         if (e.ChangedButton == MouseButton.Left)
         {
             Point mousePosition = e.GetPosition(canvas);
@@ -88,6 +118,7 @@ public partial class TransparentOverlayWindow : Window
 
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {
+        if (e.Key == Key.Escape) CloseWindow();
         if (e.Key == Key.Enter)
         {
             if (firstMousePosition.HasValue && lastMousePosition.HasValue)

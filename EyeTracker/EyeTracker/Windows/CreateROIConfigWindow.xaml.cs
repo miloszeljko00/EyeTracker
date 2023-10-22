@@ -1,12 +1,7 @@
-﻿using EyeTracker.Models;
-using EyeTracker.Pages;
-using EyeTracker.Windows;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,27 +11,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace EyeTracker
+namespace EyeTracker.Windows
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for CreateROIConfigWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {       
-
-        public MainWindow(ApplicationDbContext dbContext)
+    public partial class CreateROIConfigWindow : Window
+    {
+        public CreateROIConfigWindow()
         {
-            DataContext = this;
             InitializeComponent();
-            var app = (App)App.Current;
-            frame.NavigationService.Navigate(app.ServiceProvider.GetService<ConnectEyeTrackerPage>());
-            //Window window = new TransparentOverlayWindow();
-            //this.WindowState = WindowState.Minimized;
-            //window.Show();
-            //window.Focus();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -46,7 +32,6 @@ namespace EyeTracker
                 Close();
             }
         }
-
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
@@ -74,6 +59,18 @@ namespace EyeTracker
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var window = app.ServiceProvider.GetService<TransparentOverlayWindow>();
+            if (window == null) return;
+            window.Owner = app.MainWindow;
+            window.Owner.Opacity = 0.5;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.ShowDialog();
+            window.Owner.Opacity = 1;
         }
     }
 }

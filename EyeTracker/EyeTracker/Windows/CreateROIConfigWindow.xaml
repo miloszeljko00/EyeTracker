@@ -1,13 +1,13 @@
-﻿<Window x:Class="EyeTracker.MainWindow"
+﻿<Window x:Class="EyeTracker.Windows.CreateROIConfigWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EyeTracker"
+        xmlns:local="clr-namespace:EyeTracker.Windows"
         xmlns:userControls="clr-namespace:EyeTracker.UserControls"
         mc:Ignorable="d"
-        Title="EyeTracker" Height="450" Width="800"
-        WindowStyle="None"
+        Title="CreateROIConfigWindow" Height="240" Width="400"
+                WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         KeyDown="Window_KeyDown">
     <WindowChrome.WindowChrome>
@@ -19,6 +19,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="1*" />
+            <RowDefinition Height="38" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="btnMinimize" Content="_" Width="40" Height="40" FontSize="16"
@@ -34,6 +36,16 @@
                     BorderBrush="Transparent" Background="Transparent"
                     Cursor="Hand" Foreground="Black" Click="btnClose_Click"/>
         </StackPanel>
-        <Frame Name="frame" Grid.Row="1" NavigationUIVisibility="Hidden"/>
+        <Grid Grid.Row="1">
+            <StackPanel>
+                <userControls:TextInputField Placeholder="Configuration name" Text=""></userControls:TextInputField>
+                <Button Click="Button_Click" Cursor="Hand">Select ROIs</Button>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label>Total ROIs:</Label>
+                    <Label>0</Label>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+            <Button Grid.Row="2" Width="150" Cursor="Hand">CONFIRM</Button>
     </Grid>
 </Window>
