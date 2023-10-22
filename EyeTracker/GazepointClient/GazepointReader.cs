@@ -52,6 +52,7 @@ namespace GazepointClient
             {
                 SignalObjectsDict.Add(signalName, new List<object>());
             };
+            SignalObjectsDict.Add("ROI_LABEL", new List<object>());
         }
 
         private static string WriteSignalXMLLine(string signalName)
