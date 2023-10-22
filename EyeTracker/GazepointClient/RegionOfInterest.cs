@@ -22,5 +22,11 @@ namespace GazepointClient
     {
         public List<Point> points { get; set; }
         public string region { get; set; }
+
+        public RegionOfInterest(List<Point> points, string region)
+        {
+            this.points = points;
+            this.region = region;
+        }
     }
 }
