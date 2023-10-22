@@ -17,6 +17,11 @@ namespace GazepointClient
         {
             GazepointReader gazepointReader = new();
 
+            if(!gazepointReader.Configuration.InputSignals.Contains("ENABLE_SEND_POG_BEST"))
+            {
+                throw new Exception("ENABLE_SEND_POG_BEST not in input signal list. Can't label without the (x,y) coordinates from it");
+            }
+
             int ServerPort = gazepointReader.Configuration.ServerPort;
             string ServerIP = gazepointReader.Configuration.ServerIp;
 
