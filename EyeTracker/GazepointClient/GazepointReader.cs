@@ -16,11 +16,12 @@ namespace GazepointClient
     {
         public int ServerPort { get; set; }
         public string ServerIp { get; set; }
+        public List<int> ScreenSize { get; set; }  // has to be list because YamlDotNet is stupid
         public List<string> InputSignals { get; set; }
         public Dictionary<string, Dictionary<string, List<string>>> SignalOutputs { get; set; }
     }
 
-    public class ConfigReader
+    public class GazepointReader
     {
         public Configuration Configuration { get; set; }
 
@@ -28,7 +29,7 @@ namespace GazepointClient
 
         public Dictionary<string, List<object>> SignalObjectsDict { get; set; }
 
-        public ConfigReader()
+        public GazepointReader()
         {
             string workingDirectory = Directory.GetCurrentDirectory();
             string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
@@ -52,6 +53,7 @@ namespace GazepointClient
             {
                 SignalObjectsDict.Add(signalName, new List<object>());
             };
+            SignalObjectsDict.Add("ROI_LABEL", new List<object>());
         }
 
         private static string WriteSignalXMLLine(string signalName)
@@ -119,10 +121,10 @@ namespace GazepointClient
                 string signalTypeName = SignalTypeFromSignalName(singalName);
                 Type signalType = Type.GetType("GazepointClient."+signalTypeName);
 
-                MethodInfo method = typeof(ConfigReader).GetMethod("ParseSingleOutputSignal", BindingFlags.NonPublic | BindingFlags.Instance);
+                MethodInfo method = typeof(GazepointReader).GetMethod("ParseSingleOutputSignal", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo generic = method.MakeGenericMethod(signalType);
 
-                object result = generic.Invoke(new ConfigReader(), new object[] { incomingData });
+                object result = generic.Invoke(new GazepointReader(), new object[] { incomingData });
 
                 SignalObjectsDict[singalName].Add(result);
             }

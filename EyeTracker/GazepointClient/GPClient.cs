@@ -15,10 +15,15 @@ namespace GazepointClient
     {
         static void Main(string[] args)
         {
-            ConfigReader configReader = new();
+            GazepointReader gazepointReader = new();
 
-            int ServerPort = configReader.Configuration.ServerPort;
-            string ServerIP = configReader.Configuration.ServerIp;
+            if(!gazepointReader.Configuration.InputSignals.Contains("ENABLE_SEND_POG_BEST"))
+            {
+                throw new Exception("ENABLE_SEND_POG_BEST not in input signal list. Can't label without the (x,y) coordinates from it");
+            }
+
+            int ServerPort = gazepointReader.Configuration.ServerPort;
+            string ServerIP = gazepointReader.Configuration.ServerIp;
 
             bool exit_state = false;
             int startindex, endindex;
@@ -45,7 +50,7 @@ namespace GazepointClient
             data_write = new StreamWriter(data_feed);
 
             // Setup the data records
-            data_write.Write(configReader.WriteSignalXMLConfiguration());
+            data_write.Write(gazepointReader.WriteSignalXMLConfiguration());
 
             // Flush the buffer out the socket
             data_write.Flush();
@@ -64,7 +69,7 @@ namespace GazepointClient
                         if (incoming_data.IndexOf("<REC") != -1)
                         {
                             Console.WriteLine(incoming_data);
-                            configReader.ParseIncomingDataLine(incoming_data);
+                            gazepointReader.ParseIncomingDataLine(incoming_data);
 
                             // TODO(@Vlodson): logic for labeling stuff as being in a user defined zone
                             // inside it also noise removal, has to work fast
@@ -89,7 +94,7 @@ namespace GazepointClient
             data_feed.Close();
             gp3_client.Close();
 
-            // TODO(@Vlodson): logic for saving data in configReader.SignalObjectsDict to a csv
+            // TODO(@Vlodson): logic for saving data in gazepointReader.SignalObjectsDict to a csv
         }
     }
 }
