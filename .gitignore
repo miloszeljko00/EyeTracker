@@ -1,3 +1,7 @@
+# ignore config and leave just the template
+EyeTracker/GazepointClient/config.yaml
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/csharp,python,dotnetcore,vs,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=csharp,python,dotnetcore,vs,pycharm
 
