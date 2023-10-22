@@ -13,11 +13,13 @@ namespace GazepointClient
 {
     class GPClient
     {
-        const int ServerPort = 4242;
-        const string ServerIP = "172.19.0.1";
-
         static void Main(string[] args)
         {
+            ConfigReader configReader = new();
+
+            int ServerPort = configReader.Configuration.ServerPort;
+            string ServerIP = configReader.Configuration.ServerIp;
+
             bool exit_state = false;
             int startindex, endindex;
             TcpClient gp3_client;
@@ -43,10 +45,7 @@ namespace GazepointClient
             data_write = new StreamWriter(data_feed);
 
             // Setup the data records
-            data_write.Write("<SET ID=\"ENABLE_SEND_TIME\" STATE=\"1\" />\r\n");
-            data_write.Write("<SET ID=\"ENABLE_SEND_POG_FIX\" STATE=\"1\" />\r\n");
-            data_write.Write("<SET ID=\"ENABLE_SEND_CURSOR\" STATE=\"1\" />\r\n");
-            data_write.Write("<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n");
+            data_write.Write(configReader.WriteSignalXMLConfiguration());
 
             // Flush the buffer out the socket
             data_write.Flush();
@@ -64,30 +63,11 @@ namespace GazepointClient
                         // only process DATA RECORDS, ie <REC .... />
                         if (incoming_data.IndexOf("<REC") != -1)
                         {
-                            double time_val;
-                            double fpogx;
-                            double fpogy;
-                            int fpog_valid;
+                            Console.WriteLine(incoming_data);
+                            configReader.ParseIncomingDataLine(incoming_data);
 
-                            // Process incoming_data string to extract FPOGX, FPOGY, etc...
-                            startindex = incoming_data.IndexOf("TIME=\"") + "TIME=\"".Length;
-                            endindex = incoming_data.IndexOf("\"", startindex);
-                            time_val = Double.Parse(incoming_data.Substring(startindex, endindex - startindex));
-
-                            startindex = incoming_data.IndexOf("FPOGX=\"") + "FPOGX=\"".Length;
-                            endindex = incoming_data.IndexOf("\"", startindex);
-                            fpogx = Double.Parse(incoming_data.Substring(startindex, endindex - startindex));
-
-                            startindex = incoming_data.IndexOf("FPOGY=\"") + "FPOGY=\"".Length;
-                            endindex = incoming_data.IndexOf("\"", startindex);
-                            fpogy = Double.Parse(incoming_data.Substring(startindex, endindex - startindex));
-
-                            startindex = incoming_data.IndexOf("FPOGV=\"") + "FPOGV=\"".Length;
-                            endindex = incoming_data.IndexOf("\"", startindex);
-                            fpog_valid = Int32.Parse(incoming_data.Substring(startindex, endindex - startindex));
-
-                            Console.WriteLine("Raw data: {0}", incoming_data);
-                            Console.WriteLine("Processed data: Time {0}, Gaze ({1},{2}) Valid={3}", time_val, fpogx, fpogy, fpog_valid);
+                            // TODO(@Vlodson): logic for labeling stuff as being in a user defined zone
+                            // inside it also noise removal, has to work fast
                         }
 
                         incoming_data = "";
@@ -108,6 +88,8 @@ namespace GazepointClient
             data_write.Close();
             data_feed.Close();
             gp3_client.Close();
+
+            // TODO(@Vlodson): logic for saving data in configReader.SignalObjectsDict to a csv
         }
     }
 }
