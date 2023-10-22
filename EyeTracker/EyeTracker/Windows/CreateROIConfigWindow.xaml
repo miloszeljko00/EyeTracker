@@ -38,14 +38,14 @@
         </StackPanel>
         <Grid Grid.Row="1">
             <StackPanel>
-                <userControls:TextInputField Placeholder="Configuration name" Text=""></userControls:TextInputField>
+                <userControls:TextInputField Placeholder="Configuration name" Text="{Binding ROIConfig.Name, Mode=TwoWay}"></userControls:TextInputField>
                 <Button Click="Button_Click" Cursor="Hand">Select ROIs</Button>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label>Total ROIs:</Label>
-                    <Label>0</Label>
+                    <Label Content="{Binding NumberOfROIs}"></Label>
                 </StackPanel>
             </StackPanel>
         </Grid>
-            <Button Grid.Row="2" Width="150" Cursor="Hand">CONFIRM</Button>
+            <Button Grid.Row="2" Width="150" Cursor="Hand" Click="Button_Click_1">CONFIRM</Button>
     </Grid>
 </Window>

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace EyeTracker.Models;
 
-public class ROIConfig
+public class ROIPoint
 {
     [Key]
     public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public List<ROI> ROIs { get; set; } = new();
+    public double X { get; set; }
+    public double Y { get; set; }
 }

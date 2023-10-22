@@ -1,7 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using EyeTracker.Models;
+using EyeTracker.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,11 +22,50 @@ namespace EyeTracker.Windows
     /// <summary>
     /// Interaction logic for CreateROIConfigWindow.xaml
     /// </summary>
-    public partial class CreateROIConfigWindow : Window
+    public partial class CreateROIConfigWindow : Window, INotifyPropertyChanged
     {
-        public CreateROIConfigWindow()
+        private readonly ROIConfigService _roiConfigService;
+        private int _numberOfROIs;
+
+        public int NumberOfROIs
         {
+            get { return _numberOfROIs; }
+            set 
+            { 
+                _numberOfROIs = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ROIConfig _roiConfig;
+        public ROIConfig ROIConfig
+        {
+            get { return _roiConfig; }
+            set 
+            { 
+                _roiConfig = value;
+                OnPropertyChanged();
+            }
+        }
+        public CreateROIConfigWindow(ROIConfigService roiConfigService)
+        {
+            _roiConfigService = roiConfigService;
+            _roiConfig = new()
+            {
+                Id = Guid.NewGuid(),
+                Name = "",
+                ROIs = new()
+            };
+            _numberOfROIs = 0;
+            DataContext = this;
             InitializeComponent();
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -34,7 +77,11 @@ namespace EyeTracker.Windows
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DragMove();
+            try
+            {
+                DragMove();
+            }
+            catch { }
         }
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
@@ -66,11 +113,31 @@ namespace EyeTracker.Windows
             var app = (App)Application.Current;
             var window = app.ServiceProvider.GetService<TransparentOverlayWindow>();
             if (window == null) return;
-            window.Owner = app.MainWindow;
+            window.Owner = this;
             window.Owner.Opacity = 0.5;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            window.ShowDialog();
+
+            window.ROIs = ROIConfig.ROIs;
+
+            window.Show();
             window.Owner.Opacity = 1;
+            Focus();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (ROIConfig.Name == "")
+            {
+                MessageBox.Show("Name can't be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (ROIConfig.ROIs.Count == 0)
+            {
+                MessageBox.Show("Atleast 1 ROI must be marked.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            _roiConfigService.Create(ROIConfig);
+            Close();
         }
     }
 }

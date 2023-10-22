@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EyeTracker.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="48" d:DesignWidth="300">
+             d:DesignHeight="48" d:DesignWidth="300"
+             GotFocus="UserControl_GotFocus"
+             Focusable="True">
     <Grid Background="White">
         <TextBox x:Name="txtInput" VerticalContentAlignment="Center" Padding="4,0,0,0"
                      FontSize="18" Background="Transparent" Text="{Binding Text, RelativeSource={RelativeSource AncestorType=UserControl}}"

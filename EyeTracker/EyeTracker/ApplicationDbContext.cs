@@ -11,6 +11,8 @@ public class ApplicationDbContext: DbContext
     public DbSet<EyeTrackerConfig> EyeTrackerConfigs { get; set; }
     public DbSet<Profile> Profiles { get; set; }
     public DbSet<ROIConfig> ROIConfigs { get; set; }
+    public DbSet<ROI> ROIs { get; set; }
+    public DbSet<ROIPoint> ROIPoints { get; set; }
     #endregion
 
     #region Contructor
@@ -24,7 +26,6 @@ public class ApplicationDbContext: DbContext
     {
         modelBuilder.Entity<EyeTrackerConfig>().HasData(GetEyeTrackerConfigs());
         modelBuilder.Entity<Profile>().HasData(GetProfiles());
-        modelBuilder.Entity<ROIConfig>().HasData(GetROIConfigs());
         base.OnModelCreating(modelBuilder);
     }
     #endregion
@@ -51,20 +52,6 @@ public class ApplicationDbContext: DbContext
             new Profile {
                 Id = Guid.Parse("f3bb9e65-ddce-491b-b021-869a1c0660b5"),
                 Name = "Jovana Santovac"
-            },
-        };
-    }
-    private List<ROIConfig> GetROIConfigs()
-    {
-        return new List<ROIConfig>
-        {
-            new ROIConfig {
-                Id = Guid.Parse("f3bb9e65-ddce-491b-b021-869a1c0660b7"),
-                Name = "Config 1"
-            },
-            new ROIConfig {
-                Id = Guid.Parse("f3bb9e65-ddce-491b-b021-869a1c0660b8"),
-                Name = "Config 2"
             },
         };
     }

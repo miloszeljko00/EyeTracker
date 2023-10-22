@@ -55,6 +55,7 @@ public partial class App : Application
         //Services
         services.AddSingleton<EyeTrackerConfigService>();
         services.AddSingleton<ProfileService>();
+        services.AddSingleton<ROIConfigService>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)
