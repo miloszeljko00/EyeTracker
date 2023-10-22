@@ -15,7 +15,12 @@ namespace GazepointClient
             this.RegionsOfInterest = regionOfInterests;
         }
 
-        public void LabelSignalObjectsData(ref Dictionary<string, List<object>> signalObjectsData, Tuple<int> screenSize)
+        private static Point FractionCoordinatesToAbsoluteCoordinates(Point point, List<int> screenSize)
+        {
+            return new Point(screenSize[0] * point.x, screenSize[1] * point.y);
+        }
+
+        public void LabelSignalObjectsData(ref Dictionary<string, List<object>> signalObjectsData, List<int> screenSize)
         {
             if (!signalObjectsData.ContainsKey("ENABLE_SEND_POG_BEST"))
             {
