@@ -5,13 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EyeTracker.Models;
+namespace Contracts;
 
 public class ROIConfig
 {
-    [Key]
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
     public List<ROI> ROIs { get; set; } = new();
-    public List<Recording> Recordings { get; set; } = new();
 }

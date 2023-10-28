@@ -1,12 +1,6 @@
-﻿using EyeTracker.Models;
-using EyeTracker.Pages;
-using EyeTracker.Windows;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,27 +10,34 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace EyeTracker
+namespace EyeTracker.Windows
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ROINameEntryWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
-    {       
+    public partial class ROINameEntryWindow : Window
+    {
+        public string EnteredData { get; private set; } = string.Empty;
 
-        public MainWindow(ApplicationDbContext dbContext)
+        public ROINameEntryWindow()
         {
-            DataContext = this;
             InitializeComponent();
-            var app = (App)App.Current;
-            frame.NavigationService.Navigate(app.ServiceProvider.GetService<ConnectEyeTrackerPage>());
-            //Window window = new TransparentOverlayWindow();
-            //this.WindowState = WindowState.Minimized;
-            //window.Show();
-            //window.Focus();
+        }
+
+        private void OK_Click(object sender, RoutedEventArgs e)
+        {
+            EnteredData = inputField.Text;
+            if (EnteredData == "") return;
+            DialogResult = true;
+            Close();
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -46,7 +47,6 @@ namespace EyeTracker
                 Close();
             }
         }
-
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -78,6 +78,17 @@ namespace EyeTracker
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void inputField_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                EnteredData = inputField.Text;
+                if (EnteredData == "") return;
+                DialogResult = true;
+                Close();
+            }
         }
     }
 }

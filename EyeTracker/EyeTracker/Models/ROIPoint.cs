@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace EyeTracker.Models;
 
-[Serializable]
-public class EyeTrackerConfig
+public class ROIPoint
 {
     [Key]
     public Guid Id { get; set; }
-    public string Address { get; set; } = string.Empty;
-    public string Port { get; set; } = string.Empty;
-    public int ScreenWidth { get; set; }
-    public int ScreenHeight { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
 }

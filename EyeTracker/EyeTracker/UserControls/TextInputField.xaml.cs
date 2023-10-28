@@ -82,5 +82,10 @@ namespace EyeTracker.UserControls
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void UserControl_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtInput.Focus();
+        }
     }
 }

@@ -4,6 +4,7 @@ using EyeTracker.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,9 @@ namespace EyeTracker.Pages;
 
 public partial class ROIConfigsPage : Page, INotifyPropertyChanged
 {
+    private readonly ROIConfigService _roiConfigService;
+    public ObservableCollection<ROIConfig> ROIConfigs {  get; set; }
+
     private Profile _selectedProfile;
     private bool _selectionDisabled = false;
     public Profile SelectedProfile
@@ -40,12 +44,15 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     private ProfileService _profileService;
-    public ROIConfigsPage(ProfileService profileService)
+    public ROIConfigsPage(ProfileService profileService, ROIConfigService roiConfigService)
     {
+        _roiConfigService = roiConfigService;
         _profileService = profileService;
         _selectedProfile = LoadSelectedProfile();
+        ROIConfigs = new(_roiConfigService.GetROIConfigs());
         DataContext = this;
         InitializeComponent();
+        ROIConfigsDataGrid.ItemsSource = ROIConfigs;
     }
 
     private Profile LoadSelectedProfile()
@@ -64,10 +71,9 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         if (_selectionDisabled) return;
         if (ROIConfigsDataGrid.SelectedItem != null)
         {
-            var roiConfig = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
-            MessageBox.Show(roiConfig.Name);
-
-            ROIConfigsDataGrid.SelectedItem = null;
+            _roiConfigService.SelectedConfig = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
+            var app = (App)Application.Current;
+            NavigationService.Navigate(app.ServiceProvider.GetService<RecordingsPage>());
         }
     }
 
@@ -115,5 +121,8 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
         window.ShowDialog();
         window.Owner.Opacity = 1;
+        if (window.ROIConfig.Name == "") return;
+        if (window.ROIConfig.ROIs.Count == 0) return;
+        ROIConfigs.Add(window.ROIConfig);
     }
 }

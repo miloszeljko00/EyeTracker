@@ -12,5 +12,14 @@
     <Window.Background>
         <SolidColorBrush Color="#33000000" />
     </Window.Background>
-    <Canvas Name="canvas" />
+    <Canvas Name="canvas">
+        <StackPanel HorizontalAlignment="Center">
+            <Label Foreground="white">"ESC" to exit</Label>
+            <Label Foreground="white">"LMB" to place a point</Label>
+            <Label Foreground="white">"RMB" to remove last point</Label>
+            <Label Foreground="white">"SPACE" to confirm ROI</Label>
+            <Label Foreground="white">"BACKSPACE" to remove last ROI</Label>
+            <Label Foreground="white">"ENTER" to finish entering ROIs</Label>
+        </StackPanel>
+    </Canvas>
 </Window>
