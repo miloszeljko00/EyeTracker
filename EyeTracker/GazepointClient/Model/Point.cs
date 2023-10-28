@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,12 @@ namespace GazepointClient.Model
         {
             this.X = x;
             this.Y = y;
+        }
+
+        public Point(ROIPoint rOIPoint)
+        {
+            this.X = rOIPoint.X;
+            this.Y = rOIPoint.Y;
         }
 
         public static Point FractionCoordinatesToAbsoluteCoordinates(Point point, List<int> screenSize)

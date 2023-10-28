@@ -15,6 +15,10 @@ namespace GazepointClient
 {
     public class GPClient: IGPClient
     {
+        private TcpClient gp3Client;
+        private NetworkStream dataFeed;
+        private StreamWriter dataWrite;
+
         static void Main(string[] args)
         {
             GazepointReader gazepointReader = new();

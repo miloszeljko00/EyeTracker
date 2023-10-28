@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Contracts;
+
 namespace GazepointClient.Model
 {
     public class RegionOfInterest
@@ -15,6 +17,17 @@ namespace GazepointClient.Model
         {
             this.points = points;
             this.region = region;
+        }
+
+        public RegionOfInterest(ROI regionOfInterest)
+        {
+            this.points = new List<Point>();
+            foreach(ROIPoint rOIPoint in regionOfInterest.Points)
+            {
+                this.points.Add(new Point(rOIPoint));
+            }
+
+            this.region = regionOfInterest.Id;
         }
 
         public int GetNumberOfSides()
