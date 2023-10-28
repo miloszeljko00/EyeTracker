@@ -1,6 +1,8 @@
 ﻿using EyeTracker.Pages;
 using EyeTracker.Services;
 using EyeTracker.Windows;
+using GazepointClient;
+using GazepointClient.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +35,7 @@ public partial class App : Application
         // Delete the existing database file if it exists
         if (File.Exists(databaseFilePath))
         {
-            File.Delete(databaseFilePath);
+          File.Delete(databaseFilePath);
         }
 
         //Contexts
@@ -51,11 +53,13 @@ public partial class App : Application
         services.AddTransient<ConnectEyeTrackerPage>();
         services.AddTransient<ProfilesPage>();
         services.AddTransient<ROIConfigsPage>();
+        services.AddTransient<RecordingsPage>();
 
         //Services
         services.AddSingleton<EyeTrackerConfigService>();
         services.AddSingleton<ProfileService>();
         services.AddSingleton<ROIConfigService>();
+        services.AddSingleton<GPClient>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)

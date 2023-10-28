@@ -8,10 +8,11 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using GazepointClient.Interfaces;
 
 namespace GazepointClient
 {
-    class GPClient
+    public class GPClient
     {
         static void Main(string[] args)
         {

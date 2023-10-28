@@ -71,10 +71,9 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         if (_selectionDisabled) return;
         if (ROIConfigsDataGrid.SelectedItem != null)
         {
-            var roiConfig = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
-            MessageBox.Show(roiConfig.Name);
-
-            ROIConfigsDataGrid.SelectedItem = null;
+            _roiConfigService.SelectedConfig = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
+            var app = (App)Application.Current;
+            NavigationService.Navigate(app.ServiceProvider.GetService<RecordingsPage>());
         }
     }
 

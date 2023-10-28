@@ -14,4 +14,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\GazepointClient\GazepointClient.csproj" />
+  </ItemGroup>
+
 </Project>

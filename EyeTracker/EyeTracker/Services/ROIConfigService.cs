@@ -12,10 +12,13 @@ public class ROIConfigService
 {
     private readonly ApplicationDbContext _context;
 
+    public ROIConfig? SelectedConfig { get; set; }
+
     public ROIConfigService(ApplicationDbContext context)
     {
         _context = context;
     }
+
     public List<ROIConfig> GetROIConfigs()
     {
        return _context.ROIConfigs.AsNoTracking().ToList();

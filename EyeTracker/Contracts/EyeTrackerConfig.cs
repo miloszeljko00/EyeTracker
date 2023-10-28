@@ -5,13 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EyeTracker.Models;
+namespace Contracts;
 
-[Serializable]
 public class EyeTrackerConfig
 {
-    [Key]
-    public Guid Id { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Port { get; set; } = string.Empty;
     public int ScreenWidth { get; set; }
