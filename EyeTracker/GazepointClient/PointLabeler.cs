@@ -20,11 +20,11 @@ namespace GazepointClient
         private static int LineSegmentsIntersect(LineSegment line1, LineSegment line2)
         {
             // two lines will intersect iff slopes are different
-            if ((Math.Abs(line1.k - line2.k) > 0)) {
+            if ((Math.Abs(line1.K - line2.K) > 0)) {
             
                 // find intercept point to see if it's on the specific line segments that these two lines represent
-                var interceptX = (line2.n - line1.n) / (line1.k - line2.k);
-                var interceptY = line1.k * interceptX + line1.n;
+                var interceptX = (line2.N - line1.N) / (line1.K - line2.K);
+                var interceptY = line1.K * interceptX + line1.N;
                 Point interceptPoint = new Point(interceptX, interceptY);
 
                 // if the point is on both line segments then there is an intercept between two line segments
@@ -43,7 +43,7 @@ namespace GazepointClient
         {
             int intersections = 0;
 
-            Point rayOrigin = new Point(regionOfInterest.GetMinX() - 0.1 * point.y, point.y);
+            Point rayOrigin = new Point(regionOfInterest.GetMinX() - 0.1 * point.Y, point.Y);
             LineSegment ray = new LineSegment(point, rayOrigin);
 
             foreach(LineSegment side in regionOfInterest.GetSidesAsLines())

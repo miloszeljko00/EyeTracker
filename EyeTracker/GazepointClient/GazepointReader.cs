@@ -10,20 +10,13 @@ using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
+using GazepointClient.Model;
+
 namespace GazepointClient
 {
-    public class Configuration
-    {
-        public int ServerPort { get; set; }
-        public string ServerIp { get; set; }
-        public List<int> ScreenSize { get; set; }  // has to be list because YamlDotNet is stupid
-        public List<string> InputSignals { get; set; }
-        public Dictionary<string, Dictionary<string, List<string>>> SignalOutputs { get; set; }
-    }
-
     public class GazepointReader
     {
-        public Configuration Configuration { get; set; }
+        public SignalConfiguration SignalConfiguration { get; set; }
 
         private Dictionary<string, Type> TypeMapping { get; set; }
 
@@ -39,7 +32,7 @@ namespace GazepointClient
             using var strReader = new StringReader(yamlString);
 
             var yamlDeserializer = new DeserializerBuilder().WithNamingConvention(UnderscoredNamingConvention.Instance).Build();
-            Configuration = yamlDeserializer.Deserialize<Configuration>(strReader);
+            SignalConfiguration = yamlDeserializer.Deserialize<SignalConfiguration>(strReader);
 
             TypeMapping = new Dictionary<string, Type>
             {
@@ -49,7 +42,7 @@ namespace GazepointClient
             };
 
             SignalObjectsDict = new Dictionary<string, List<object>>();
-            foreach(string signalName in Configuration.InputSignals)
+            foreach(string signalName in SignalConfiguration.InputSignals)
             {
                 SignalObjectsDict.Add(signalName, new List<object>());
             };
@@ -58,18 +51,18 @@ namespace GazepointClient
 
         private static string WriteSignalXMLLine(string signalName)
         {
-            return $"<SET ID=\"{signalName}\" STATE=\"1\" />\r\n";
+            return $"<SET ID=\"{signalName}\" STATE=\"1\" />\r\N";
         }
 
-        public string WriteSignalXMLConfiguration()
+        public string WriteSignalXMLSignalConfiguration()
         {
             string xml = "";
-            foreach(string signalName in Configuration.InputSignals)
+            foreach(string signalName in SignalConfiguration.InputSignals)
             {
                 xml += WriteSignalXMLLine(signalName);
             }
 
-            xml += "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n";
+            xml += "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\N";
 
             return xml;
         }
@@ -81,7 +74,7 @@ namespace GazepointClient
             string outputSignalName = typeof(T).Name;
             string yamlSignalName = "ENABLE_SEND_" + outputSignalName.ToUpper();
 
-            Dictionary<string, List<string>> signal = Configuration.SignalOutputs[yamlSignalName];
+            Dictionary<string, List<string>> signal = SignalConfiguration.SignalOutputs[yamlSignalName];
 
             foreach(var item in signal["params"].Zip(signal["types"], (first, second) => (first, second)))
             {
@@ -116,7 +109,7 @@ namespace GazepointClient
         // and values being lists of those objects gotten from the tracker
         public void ParseIncomingDataLine(string incomingData)
         {
-            foreach(string singalName in Configuration.InputSignals)
+            foreach(string singalName in SignalConfiguration.InputSignals)
             {
                 string signalTypeName = SignalTypeFromSignalName(singalName);
                 Type signalType = Type.GetType("GazepointClient."+signalTypeName);

@@ -20,7 +20,7 @@ namespace GazepointClient
 
             if(!gazepointReader.Configuration.InputSignals.Contains("ENABLE_SEND_POG_BEST"))
             {
-                throw new Exception("ENABLE_SEND_POG_BEST not in input signal list. Can't label without the (x,y) coordinates from it");
+                throw new Exception("ENABLE_SEND_POG_BEST not in input signal list. Can't label without the (X,Y) coordinates from it");
             }
 
             int ServerPort = gazepointReader.Configuration.ServerPort;
@@ -63,8 +63,8 @@ namespace GazepointClient
                 {
                     incoming_data += (char)ch;
 
-                    // find string terminator ("\r\n") 
-                    if (incoming_data.IndexOf("\r\n") != -1)
+                    // find string terminator ("\r\N") 
+                    if (incoming_data.IndexOf("\r\N") != -1)
                     {
                         // only process DATA RECORDS, ie <REC .... />
                         if (incoming_data.IndexOf("<REC") != -1)

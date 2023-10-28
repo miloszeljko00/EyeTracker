@@ -36,7 +36,7 @@ namespace GazepointClient.Model
 
         public double GetMinX()
         {
-            return points.Min(p => p.x);
+            return points.Min(p => p.X);
         }
     }
 }

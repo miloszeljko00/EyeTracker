@@ -8,18 +8,18 @@ namespace GazepointClient.Model
 {
     public class Point
     {
-        public double x { get; set; }
-        public double y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
 
         public Point(double x, double y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         public static Point FractionCoordinatesToAbsoluteCoordinates(Point point, List<int> screenSize)
         {
-            return new Point(screenSize[0] * point.x, screenSize[1] * point.y);
+            return new Point(screenSize[0] * point.X, screenSize[1] * point.Y);
         }
     }
 }
