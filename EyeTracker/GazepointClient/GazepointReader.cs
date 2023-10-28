@@ -51,7 +51,7 @@ namespace GazepointClient
 
         private static string WriteSignalXMLLine(string signalName)
         {
-            return $"<SET ID=\"{signalName}\" STATE=\"1\" />\r\N";
+            return $"<SET ID=\"{signalName}\" STATE=\"1\" />\r\n";
         }
 
         public string WriteSignalXMLSignalConfiguration()
@@ -62,7 +62,7 @@ namespace GazepointClient
                 xml += WriteSignalXMLLine(signalName);
             }
 
-            xml += "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\N";
+            xml += "<SET ID=\"ENABLE_SEND_DATA\" STATE=\"1\" />\r\n";
 
             return xml;
         }
