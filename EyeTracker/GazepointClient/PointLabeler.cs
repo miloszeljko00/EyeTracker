@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GazepointClient.Model;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace GazepointClient
 {
@@ -15,11 +17,23 @@ namespace GazepointClient
             this.RegionsOfInterest = regionOfInterests;
         }
 
-        private static int LinesIntersect(Line line1, Line line2)
+        private static int LineSegmentsIntersect(LineSegment line1, LineSegment line2)
         {
-            if ((line1.k == line2.k) && (line1.n != line2.n)) return 1;  // regular intersect so count as 1
+            // two lines will intersect iff slopes are different
+            if ((Math.Abs(line1.k - line2.k) > 0)) {
             
-            return 0;  // no intersect or point on line (we won't count thsese) so count as 0
+                // find intercept point to see if it's on the specific line segments that these two lines represent
+                var interceptX = (line2.n - line1.n) / (line1.k - line2.k);
+                var interceptY = line1.k * interceptX + line1.n;
+                Point interceptPoint = new Point(interceptX, interceptY);
+
+                // if the point is on both line segments then there is an intercept between two line segments
+                if (line1.PointOnLineSegment(interceptPoint) && line2.PointOnLineSegment(interceptPoint)) return 1;
+
+                return 0;
+            }
+
+            return 0;
         }
 
         // count intersections by raycasting between an origin and the tested point
@@ -30,14 +44,11 @@ namespace GazepointClient
             int intersections = 0;
 
             Point rayOrigin = new Point(regionOfInterest.GetMinX() - 0.1 * point.y, point.y);
-            Line ray = new Line(point, rayOrigin);
+            LineSegment ray = new LineSegment(point, rayOrigin);
 
-            // check only those sides behind which is the point that is tested
-            List<Line> sidesToCheck = regionOfInterest.GetSidesAsLines().FindAll(line => line.k * point.x + line.n - point.y > 0);
-
-            foreach(Line side in sidesToCheck)
+            foreach(LineSegment side in regionOfInterest.GetSidesAsLines())
             {
-                intersections += LinesIntersect(side, ray);
+                intersections += LineSegmentsIntersect(side, ray);
             }
 
             return intersections;
