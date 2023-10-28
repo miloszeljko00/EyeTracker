@@ -1,16 +1,5 @@
 # COPY THIS FILE AND REMOVE THE TEMPLATE PART TO USE OWN CONFIGURATION
 
-# port of the gazepoint server (has to be int)
-server_port: 4242
-
-# ip of the gazepoint server (has to be string)
-server_ip: "172.19.0.1"
-
-# size of the screen
-screen_size:
-    - 1920  # width
-    - 1080  # height
-
 # signals from the tracker, uncomment those that you want to use
 # for more information read Gazepoint API.pdf
 input_signals:

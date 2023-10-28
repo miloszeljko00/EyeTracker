@@ -9,22 +9,23 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using GazepointClient.Interfaces;
+using Contracts;
 
 namespace GazepointClient
 {
-    public class GPClient
+    public class GPClient: IGPClient
     {
         static void Main(string[] args)
         {
             GazepointReader gazepointReader = new();
 
-            if(!gazepointReader.Configuration.InputSignals.Contains("ENABLE_SEND_POG_BEST"))
+            if(!gazepointReader.SignalConfiguration.InputSignals.Contains("ENABLE_SEND_POG_BEST"))
             {
                 throw new Exception("ENABLE_SEND_POG_BEST not in input signal list. Can't label without the (X,Y) coordinates from it");
             }
 
-            int ServerPort = gazepointReader.Configuration.ServerPort;
-            string ServerIP = gazepointReader.Configuration.ServerIp;
+            int ServerPort = gazepointReader.SignalConfiguration.ServerPort;
+            string ServerIP = gazepointReader.SignalConfiguration.ServerIp;
 
             bool exit_state = false;
             int startindex, endindex;
@@ -51,7 +52,7 @@ namespace GazepointClient
             data_write = new StreamWriter(data_feed);
 
             // Setup the data records
-            data_write.Write(gazepointReader.WriteSignalXMLConfiguration());
+            data_write.Write(gazepointReader.WriteSignalXMLSignalConfiguration());
 
             // Flush the buffer out the socket
             data_write.Flush();
@@ -96,6 +97,21 @@ namespace GazepointClient
             gp3_client.Close();
 
             // TODO(@Vlodson): logic for saving data in gazepointReader.SignalObjectsDict to a csv
+        }
+
+        public string GetRecordingFilePath(string roiConfigId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartRecording(ROIConfig roiConfig, EyeTrackerConfig eyeTrackerConfig)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopRecording()
+        {
+            throw new NotImplementedException();
         }
     }
 }
