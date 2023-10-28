@@ -117,9 +117,10 @@ namespace EyeTracker.Windows
             window.Owner.Opacity = 0.5;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            window.ROIs = ROIConfig.ROIs;
+            window.ROIs = new(ROIConfig.ROIs);
 
             window.Show();
+
             window.Owner.Opacity = 1;
             Focus();
         }

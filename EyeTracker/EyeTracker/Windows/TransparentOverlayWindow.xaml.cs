@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace EyeTracker.Windows;
 
@@ -34,6 +35,13 @@ public partial class TransparentOverlayWindow : Window
     private List<ROIPoint> _roiPoints = new();
     private ROIPoint? _lastROIPoint = null;
     private ROIPoint? _firstROIPoint = null;
+    private bool isDragging = false;
+    private DateTime mouseDown;
+    readonly TimeSpan interval = TimeSpan.FromMilliseconds(150);
+    private Point dragStartPoint;
+    private Rectangle? selectionRectangle;
+    private Ellipse[]? cornerDots;
+    private Line? selectionLine;
     public TransparentOverlayWindow()
     {
         _rois = new();
@@ -56,7 +64,6 @@ public partial class TransparentOverlayWindow : Window
         }
         DrawROIName(roi);
     }
-
     private void DrawROIName(ROI roi)
     {
         TextBlock textBlock = new TextBlock
@@ -70,9 +77,13 @@ public partial class TransparentOverlayWindow : Window
         var middlePoint = FindMiddlePoint(roi.Points);
         Canvas.SetLeft(textBlock, middlePoint.X - textBlock.ActualWidth / 2);
         Canvas.SetTop(textBlock, middlePoint.Y - textBlock.ActualHeight / 2);
+        textBlock.SizeChanged += (s, e) =>
+        {
+            Canvas.SetLeft(textBlock, middlePoint.X - textBlock.ActualWidth / 2);
+            Canvas.SetTop(textBlock, middlePoint.Y - textBlock.ActualHeight / 2);
+        };
         canvas.Children.Add(textBlock);
     }
-
     private void DrawLine(double x1, double y1, double x2, double y2)
     {
         Line line = new Line
@@ -87,7 +98,6 @@ public partial class TransparentOverlayWindow : Window
 
         canvas.Children.Add(line);
     }
-
     private void DrawDot(double x, double y)
     {
         var newDot = new Ellipse
@@ -100,7 +110,6 @@ public partial class TransparentOverlayWindow : Window
         Canvas.SetTop(newDot, y - (newDot.Height / 2));
         canvas.Children.Add(newDot);
     }
-
     private void MinimizeOtherWindows()
     {
         // Minimize all other windows
@@ -123,20 +132,6 @@ public partial class TransparentOverlayWindow : Window
         }
         Close();
     }
-
-
-    private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-    { 
-        if (e.ChangedButton == MouseButton.Left)
-        {
-            PlaceROIPoint(e);
-        }
-        else if (e.ChangedButton == MouseButton.Right)
-        {
-            RemoveLastROIPoint();
-        }
-    }
-
     private void RemoveLastROIPoint()
     {
         _lastROIPoint = _roiPoints.LastOrDefault();
@@ -149,6 +144,10 @@ public partial class TransparentOverlayWindow : Window
         }
         else
         {
+            if (selectionLine != null)
+            {
+                if (canvas.Children.Contains(selectionLine)) canvas.Children.Remove(selectionLine);
+            }
             _roiPoints.Remove(_lastROIPoint);
             canvas.Children.RemoveAt(canvas.Children.Count - 1);
 
@@ -157,6 +156,18 @@ public partial class TransparentOverlayWindow : Window
             {
                 canvas.Children.RemoveAt(canvas.Children.Count - 1);
                 _lastROIPoint = _roiPoints.Last();
+
+                selectionLine = new Line
+                {
+                    X1 = _lastROIPoint.X,
+                    Y1 = _lastROIPoint.Y,
+                    X2 = _lastROIPoint.X,
+                    Y2 = _lastROIPoint.Y,
+                    Stroke = Brushes.Red,
+                    StrokeDashArray = new DoubleCollection { 2 },
+                    StrokeThickness = 1
+                };
+                canvas.Children.Add(selectionLine);
             }
             else
             {
@@ -165,7 +176,6 @@ public partial class TransparentOverlayWindow : Window
             }
         }
     }
-
     private void PlaceROIPoint(MouseButtonEventArgs e)
     {
         var newROIPoint = new ROIPoint()
@@ -210,10 +220,24 @@ public partial class TransparentOverlayWindow : Window
             // Store the position of the first dot
             _firstROIPoint = newROIPoint;
         }
-
+        if(selectionLine != null)
+        {
+            if(canvas.Children.Contains(selectionLine)) canvas.Children.Remove(selectionLine);
+        }
+        
+        selectionLine = new Line
+        {
+            X1 = newROIPoint.X,
+            Y1 = newROIPoint.Y,
+            X2 = newROIPoint.X,
+            Y2 = newROIPoint.Y,
+            Stroke = Brushes.Red,
+            StrokeDashArray = new DoubleCollection { 2 },
+            StrokeThickness = 1
+        };
+        canvas.Children.Add(selectionLine);
         _lastROIPoint = newROIPoint;
     }
-
     private void Window_KeyDown(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Escape) CloseWindow();
@@ -221,7 +245,6 @@ public partial class TransparentOverlayWindow : Window
         else if (e.Key == Key.Back) RemoveLastROI();
         else if (e.Key == Key.Enter) FinishEnteringROIs();
     }
-
     private void FinishEnteringROIs()
     {
         if (_firstROIPoint != null) return;
@@ -236,15 +259,19 @@ public partial class TransparentOverlayWindow : Window
     }
     private void RemoveLastROI()
     {
-        if(_roiPoints.Count > 0)
+        if (_roiPoints.Count > 0)
         {
-            while(_roiPoints.Count > 0)
+            if (selectionLine != null)
+            {
+                if (canvas.Children.Contains(selectionLine)) canvas.Children.Remove(selectionLine);
+            }
+            while (_roiPoints.Count > 0)
             {
                 _roiPoints.Remove(_roiPoints.Last());
                 canvas.Children.RemoveAt(canvas.Children.Count - 1);
                 if (_roiPoints.Count > 0)
                 {
-                    canvas.Children.RemoveAt(canvas.Children.Count - 1);;
+                    canvas.Children.RemoveAt(canvas.Children.Count - 1);
                 }
             }
         }
@@ -294,8 +321,12 @@ public partial class TransparentOverlayWindow : Window
     }
     private void FinishROI()
     {
-        if (_firstROIPoint != null && _lastROIPoint != null)
+        if (_firstROIPoint != null && _lastROIPoint != null && _roiPoints.Count > 2)
         {
+            if (selectionLine != null)
+            {
+                if (canvas.Children.Contains(selectionLine)) canvas.Children.Remove(selectionLine);
+            }
             // Create a Line element to connect the first and last dots
             Line line = new Line
             {
@@ -328,6 +359,7 @@ public partial class TransparentOverlayWindow : Window
                 DrawROIName(roi);
 
                 ROIs.Add(roi);
+
                 _roiPoints = new();
                 _firstROIPoint = null;
                 _lastROIPoint = null;
@@ -347,9 +379,153 @@ public partial class TransparentOverlayWindow : Window
                 _lastROIPoint = null;
                 RemoveLastROI();
             }
+
             window.Owner.Opacity = 1;
             Focus();
         }
+    }
+    private List<ROIPoint> ConvertToPoints(Ellipse[] ellipses)
+    {
+        var points = new List<ROIPoint>();
+        foreach (Ellipse ellipse in ellipses)
+        {
+            points.Add(new ROIPoint() 
+            { 
+                Id = Guid.NewGuid(),
+                X = Canvas.GetLeft(ellipse) + ellipse.Width / 2, 
+                Y = Canvas.GetTop(ellipse) + ellipse.Height / 2,
+            });
+        }
+        return points;
+    }
+    private void FinishROIByDrag()
+    {
+        if (cornerDots == null) return;
+        if (selectionRectangle == null) return;
+
+
+        var roiName = "";
+        // prozor za unos naziva
+        var window = new ROINameEntryWindow();
+
+        window.Owner = this;
+        window.Owner.Opacity = 0.5;
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        if (window.ShowDialog() == true)
+        {
+            roiName = window.EnteredData;
+            var roi = new ROI()
+            {
+                Id = Guid.NewGuid(),
+                Name = roiName,
+                Points = ConvertToPoints(cornerDots),
+            };
+            ROIs.Add(roi);
+
+            DrawROI(roi);
+        }
+        ClearDrag();
+        window.Owner.Opacity = 1;
+        Focus();
+    }
+    private void Canvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (isDragging) return;
+        RemoveLastROIPoint();
+    }  
+    private void ClearDrag()
+    {
+        if (selectionRectangle != null) canvas.Children.Remove(selectionRectangle);
+        if (cornerDots != null)
+        {
+            if(canvas.Children.Contains(cornerDots[0])) canvas.Children.Remove(cornerDots[0]);
+            if (canvas.Children.Contains(cornerDots[1])) canvas.Children.Remove(cornerDots[1]);
+            if (canvas.Children.Contains(cornerDots[2])) canvas.Children.Remove(cornerDots[2]);
+            if (canvas.Children.Contains(cornerDots[3])) canvas.Children.Remove(cornerDots[3]);
+        }
+        
+        selectionRectangle = null;
+        cornerDots = null;
+        isDragging = false;
+    }
+    private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        mouseDown = DateTime.Now;
+        if (isDragging) return;
+        if (_roiPoints.Count > 0) return;
+
+        dragStartPoint = e.GetPosition(canvas);
+        selectionRectangle = new Rectangle
+        {
+            Stroke = Brushes.Red,
+            StrokeDashArray = new DoubleCollection { 2 },
+            StrokeThickness = 1
+        };
+        canvas.Children.Add(selectionRectangle);
+
+        cornerDots = new Ellipse[4];
+        for (int i = 0; i < 4; i++)
+        {
+            cornerDots[i] = new Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Fill = Brushes.Red
+            };
+            canvas.Children.Add(cornerDots[i]);
+        }
+        isDragging = true;
+    }
+    private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        if (DateTime.Now.Subtract(mouseDown) > interval)
+        {
+            // Mouse was dragged
+            if (selectionRectangle == null) return;
+            selectionRectangle.StrokeDashArray = new DoubleCollection { 1 };
+            FinishROIByDrag();
+        }
+        else
+        {
+            ClearDrag();
+            PlaceROIPoint(e);
+        }
+        isDragging = false;
+    }
+    private void Canvas_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (isDragging)
+        {
+            if (_roiPoints.Count > 0) return;
+            if (selectionRectangle == null) return;
+            if (cornerDots == null) return;
+
+            Point currentPoint = e.GetPosition(canvas);
+            double width = Math.Abs(currentPoint.X - dragStartPoint.X);
+            double height = Math.Abs(currentPoint.Y - dragStartPoint.Y);
+            Canvas.SetLeft(selectionRectangle, Math.Min(dragStartPoint.X, currentPoint.X));
+            Canvas.SetTop(selectionRectangle, Math.Min(dragStartPoint.Y, currentPoint.Y));
+            selectionRectangle.Width = width;
+            selectionRectangle.Height = height;
+
+            double dotSize = 10;
+            Canvas.SetLeft(cornerDots[0], dragStartPoint.X - dotSize / 2);
+            Canvas.SetTop(cornerDots[0], dragStartPoint.Y - dotSize / 2);
+            Canvas.SetLeft(cornerDots[1], dragStartPoint.X - dotSize / 2);
+            Canvas.SetTop(cornerDots[1], currentPoint.Y - dotSize / 2);
+            Canvas.SetLeft(cornerDots[2], currentPoint.X - dotSize / 2);
+            Canvas.SetTop(cornerDots[2], currentPoint.Y - dotSize / 2);
+            Canvas.SetLeft(cornerDots[3], currentPoint.X - dotSize / 2);
+            Canvas.SetTop(cornerDots[3], dragStartPoint.Y - dotSize / 2);
+        }
+        
+        if (_roiPoints.Count > 0 && selectionLine != null)
+        {
+            Point currentPoint = e.GetPosition(canvas);
+            selectionLine.X2 = currentPoint.X;
+            selectionLine.Y2 = currentPoint.Y;
+        }
+        
     }
 }
 
