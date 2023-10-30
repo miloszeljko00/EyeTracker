@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts;
 using GazepointClient.Model;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -15,6 +16,14 @@ namespace GazepointClient
         public PointLabeler(List<RegionOfInterest> regionOfInterests)
         {
             this.RegionsOfInterest = regionOfInterests;
+        }
+
+        public PointLabeler(ROIConfig roiConfig)
+        {
+            foreach(ROI roi in roiConfig.ROIs)
+            {
+                RegionsOfInterest.Add(new RegionOfInterest(roi));
+            }
         }
 
         private static int LineSegmentsIntersect(LineSegment line1, LineSegment line2)
@@ -54,7 +63,7 @@ namespace GazepointClient
             return intersections;
         }
 
-        public string LabelSignalObjectsData(Point point, List<int> screenSize)
+        public string LabelSignalObjectsData(Point point)
         {
             int intersections;
 

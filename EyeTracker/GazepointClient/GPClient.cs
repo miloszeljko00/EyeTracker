@@ -10,6 +10,8 @@ using System.Net.Sockets;
 using System.Threading;
 using GazepointClient.Interfaces;
 using Contracts;
+using GazepointClient.Model;
+using System.Security.Cryptography;
 
 namespace GazepointClient
 {
@@ -17,14 +19,25 @@ namespace GazepointClient
     {
         private CancellationTokenSource cancellationTokenSource;
 
+        private string sessionName = String.Empty;
+
         public GazepointReader GazepointReader { get; set; } = new GazepointReader();
+
+        private string GetGPClientProjectPath()
+        {
+            string workingDirectory = Directory.GetCurrentDirectory();  // debug or release dir
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;  // project dir with app.xaml file
+
+            return Path.Join(projectDirectory, "..", "GazepointClient");
+        }
 
         public string GetRecordingFilePath(string roiConfigId)
         {
-            throw new NotImplementedException();
+            string clientProject = this.GetGPClientProjectPath();
+            return Path.Join(clientProject, "recording_data", roiConfigId + ".csv");
         }
 
-        private void Record(ROIConfig roiConfig, EyeTrackerConfig eyeTrackerConfig, CancellationToken cancellationToken)
+        private async Task Record(PointLabeler pointLabeler, EyeTrackerConfig eyeTrackerConfig, CancellationToken cancellationToken)
         {
             TcpClient gp3Client;
             NetworkStream dataFeed;
@@ -56,7 +69,16 @@ namespace GazepointClient
 
             while(!cancellationToken.IsCancellationRequested)
             {
-                int ch = dataFeed.ReadByte();
+                byte[] byteCh = new byte[1];  // one byte/char at a time
+                
+                int readBytes = await dataFeed.ReadAsync(byteCh, 0, 1, cancellationToken);
+                if(readBytes == 0)
+                {
+                    Console.WriteLine("Server connection lost");
+                    break;
+                }
+
+                int ch = (int)byteCh[0];
                 if (ch != -1)
                 {
                     incoming_data += (char)ch;
@@ -68,8 +90,9 @@ namespace GazepointClient
                             Console.WriteLine(incoming_data);
                             GazepointReader.ParseIncomingDataLine(incoming_data);
 
-                            // TODO(@Vlodson): logic for labeling stuff as being in a user defined zone
-                            // inside it also noise removal, has to work fast
+                            POG_Best pogBest = (POG_Best)GazepointReader.SignalObjectsDict["ENABLE_SEND_POG_BEST"].Last();
+                            Point eyeCoordinates = Point.FractionCoordinatesToAbsoluteCoordinates(new Point(pogBest.BPOGX, pogBest.BPOGY), eyeTrackerConfig.ScreenWidth, eyeTrackerConfig.ScreenHeight);
+                            GazepointReader.SignalObjectsDict["ROI_LABEL"].Add(pointLabeler.LabelSignalObjectsData(eyeCoordinates));
                         }
 
                         incoming_data = "";
@@ -84,8 +107,12 @@ namespace GazepointClient
 
         public void StartRecording(ROIConfig roiConfig, EyeTrackerConfig eyeTrackerConfig)
         {
+            sessionName = roiConfig.Id;
+
+            PointLabeler pointLabeler = new PointLabeler(roiConfig);
+
             cancellationTokenSource = new();
-            Task.Run(() => Record(roiConfig, eyeTrackerConfig, cancellationTokenSource.Token));
+            Task.Run(async () => await Record(pointLabeler, eyeTrackerConfig, cancellationTokenSource.Token));
         }
 
         public void StopRecording()

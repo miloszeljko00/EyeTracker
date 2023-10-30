@@ -24,9 +24,9 @@ namespace GazepointClient.Model
             this.Y = rOIPoint.Y;
         }
 
-        public static Point FractionCoordinatesToAbsoluteCoordinates(Point point, List<int> screenSize)
+        public static Point FractionCoordinatesToAbsoluteCoordinates(Point point, int screenWidth, int screenHeight)
         {
-            return new Point(screenSize[0] * point.X, screenSize[1] * point.Y);
+            return new Point(screenWidth * point.X, screenHeight * point.Y);
         }
     }
 }

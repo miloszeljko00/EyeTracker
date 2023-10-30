@@ -19,7 +19,9 @@ namespace GazepointClient
         public SignalConfiguration SignalConfiguration { get; set; }
 
         private Dictionary<string, Type> TypeMapping { get; set; }
-
+        
+        // Dict where input signal name is the key and the value is a list of the signal's corresponding objects
+        // In it is also a special key called ROI_LABEL that represents the label at a single timestamp
         public Dictionary<string, List<object>> SignalObjectsDict { get; set; }
 
         public GazepointReader()
@@ -109,9 +111,9 @@ namespace GazepointClient
         // and values being lists of those objects gotten from the tracker
         public void ParseIncomingDataLine(string incomingData)
         {
-            foreach(string singalName in SignalConfiguration.InputSignals)
+            foreach(string signalName in SignalConfiguration.InputSignals)
             {
-                string signalTypeName = SignalTypeFromSignalName(singalName);
+                string signalTypeName = SignalTypeFromSignalName(signalName);
                 Type signalType = Type.GetType("GazepointClient."+signalTypeName);
 
                 MethodInfo method = typeof(GazepointReader).GetMethod("ParseSingleOutputSignal", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -119,7 +121,7 @@ namespace GazepointClient
 
                 object result = generic.Invoke(new GazepointReader(), new object[] { incomingData });
 
-                SignalObjectsDict[singalName].Add(result);
+                SignalObjectsDict[signalName].Add(result);
             }
         }
     }
