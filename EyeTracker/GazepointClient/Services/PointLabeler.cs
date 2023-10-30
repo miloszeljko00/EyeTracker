@@ -7,20 +7,20 @@ using Contracts;
 using GazepointClient.Model;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace GazepointClient
+namespace GazepointClient.Services
 {
     public class PointLabeler
     {
-        public List<RegionOfInterest> RegionsOfInterest { get; set;} = new List<RegionOfInterest>();
-        
+        public List<RegionOfInterest> RegionsOfInterest { get; set; } = new List<RegionOfInterest>();
+
         public PointLabeler(List<RegionOfInterest> regionOfInterests)
         {
-            this.RegionsOfInterest = regionOfInterests;
+            RegionsOfInterest = regionOfInterests;
         }
 
         public PointLabeler(ROIConfig roiConfig)
         {
-            foreach(ROI roi in roiConfig.ROIs)
+            foreach (ROI roi in roiConfig.ROIs)
             {
                 RegionsOfInterest.Add(new RegionOfInterest(roi));
             }
@@ -29,8 +29,9 @@ namespace GazepointClient
         private static int LineSegmentsIntersect(LineSegment line1, LineSegment line2)
         {
             // two lines will intersect iff slopes are different
-            if ((Math.Abs(line1.K - line2.K) > 0)) {
-            
+            if (Math.Abs(line1.K - line2.K) > 0)
+            {
+
                 // find intercept point to see if it's on the specific line segments that these two lines represent
                 var interceptX = (line2.N - line1.N) / (line1.K - line2.K);
                 var interceptY = line1.K * interceptX + line1.N;
@@ -55,7 +56,7 @@ namespace GazepointClient
             Point rayOrigin = new Point(regionOfInterest.GetMinX() - 0.1 * point.Y, point.Y);
             LineSegment ray = new LineSegment(point, rayOrigin);
 
-            foreach(LineSegment side in regionOfInterest.GetSidesAsLines())
+            foreach (LineSegment side in regionOfInterest.GetSidesAsLines())
             {
                 intersections += LineSegmentsIntersect(side, ray);
             }
@@ -67,11 +68,11 @@ namespace GazepointClient
         {
             int intersections;
 
-            foreach(RegionOfInterest regionOfInterest in RegionsOfInterest)
+            foreach (RegionOfInterest regionOfInterest in RegionsOfInterest)
             {
                 intersections = CountIntersections(point, regionOfInterest);
 
-                if((intersections % 2) == 1) // odd so it's inside of the polygon
+                if (intersections % 2 == 1) // odd so it's inside of the polygon
                 {
                     return regionOfInterest.region;
                 }

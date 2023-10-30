@@ -13,13 +13,13 @@ using Contracts;
 using GazepointClient.Model;
 using System.Security.Cryptography;
 
-namespace GazepointClient
+namespace GazepointClient.Services
 {
-    public class GPClient: IGPClient
+    public class GPClient : IGPClient
     {
         private CancellationTokenSource cancellationTokenSource;
 
-        private string sessionName = String.Empty;
+        private string sessionName = string.Empty;
 
         public GazepointReader GazepointReader { get; set; } = new GazepointReader();
 
@@ -33,7 +33,7 @@ namespace GazepointClient
 
         public string GetRecordingFilePath(string roiConfigId)
         {
-            string clientProject = this.GetGPClientProjectPath();
+            string clientProject = GetGPClientProjectPath();
             return Path.Join(clientProject, "recording_data", roiConfigId + ".csv");
         }
 
@@ -50,7 +50,7 @@ namespace GazepointClient
 
             try
             {
-                gp3Client = new TcpClient(eyeTrackerConfig.Address, Int32.Parse(eyeTrackerConfig.Port));
+                gp3Client = new TcpClient(eyeTrackerConfig.Address, int.Parse(eyeTrackerConfig.Port));
             }
             catch (Exception e)
             {
@@ -59,7 +59,7 @@ namespace GazepointClient
             }
 
             int startindex, endindex;
-            String incoming_data = "";
+            string incoming_data = "";
 
             dataFeed = gp3Client.GetStream();
             dataWrite = new StreamWriter(dataFeed);
@@ -67,18 +67,18 @@ namespace GazepointClient
             dataWrite.Write(GazepointReader.WriteSignalXMLSignalConfiguration());
             dataWrite.Flush();
 
-            while(!cancellationToken.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 byte[] byteCh = new byte[1];  // one byte/char at a time
-                
+
                 int readBytes = await dataFeed.ReadAsync(byteCh, 0, 1, cancellationToken);
-                if(readBytes == 0)
+                if (readBytes == 0)
                 {
                     Console.WriteLine("Server connection lost");
                     break;
                 }
 
-                int ch = (int)byteCh[0];
+                int ch = byteCh[0];
                 if (ch != -1)
                 {
                     incoming_data += (char)ch;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GazepointClient
+namespace GazepointClient.Model
 {
     public class Counter
     {
@@ -23,7 +23,7 @@ namespace GazepointClient
     public class POG_Best
     {
         public double BPOGX { get; set; }
-        public double BPOGY { get; set;}
+        public double BPOGY { get; set; }
         public int BPOGV { get; set; }
 
         public POG_Best() { }
