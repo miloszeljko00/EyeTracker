@@ -25,6 +25,8 @@ namespace EyeTracker.Pages
     public partial class RecordingsPage : Page
     {
         private readonly ROIConfigService _roiConfigService;
+        private readonly RecordingService _recordingService;
+
         private bool _selectionDisabled = false;
 
         private ROIConfig _selectedConfig;
@@ -52,12 +54,13 @@ namespace EyeTracker.Pages
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         private ProfileService _profileService;
-        public RecordingsPage(ProfileService profileService, ROIConfigService roiConfigService)
+        public RecordingsPage(ProfileService profileService, ROIConfigService roiConfigService, RecordingService recordingService)
         {
             _roiConfigService = roiConfigService;
             _profileService = profileService;
+            _recordingService = recordingService;
             _selectedConfig = LoadSelectedConfig();
-            _selectedProfile= LoadSelectedProfile();
+            _selectedProfile = LoadSelectedProfile();
             DataContext = this;
             InitializeComponent();
             RecordingsDataGrid.ItemsSource = SelectedConfig.Recordings;
@@ -131,7 +134,9 @@ namespace EyeTracker.Pages
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // ovde pocinje recording
+            _recordingService.StartRecordingScreen();
             MessageBox.Show("Recording...", SelectedConfig.Name);
+            _recordingService.StopRecordingScreen();
             RefreshTable();
             // ovde se zavrsava
             // TODO: Save recording

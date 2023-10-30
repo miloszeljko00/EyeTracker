@@ -6,6 +6,7 @@ using GazepointClient.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using ScreenRecorder;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using VideoEditor;
 
 namespace EyeTracker;
 
@@ -60,6 +62,7 @@ public partial class App : Application
         services.AddSingleton<ProfileService>();
         services.AddSingleton<ROIConfigService>();
         services.AddSingleton<GPClient>();
+        services.AddSingleton<RecordingService>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)
