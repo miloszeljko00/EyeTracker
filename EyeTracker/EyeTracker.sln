@@ -9,7 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowScrape", "WindowScrap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GazepointClient", "GazepointClient\GazepointClient.csproj", "{3EE85DA0-B508-4C1C-9298-BEFA5CFC2FEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenRecorder", "ScreenRecorder\ScreenRecorder.csproj", "{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoEditor", "VideoEditor\VideoEditor.csproj", "{F57C45CD-B4B0-4E44-805F-AA2D79F36210}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,22 @@ Global
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|x86.ActiveCfg = Release|Any CPU
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|x86.Build.0 = Release|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Debug|x86.Build.0 = Debug|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|x86.ActiveCfg = Release|Any CPU
+		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|x86.Build.0 = Release|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Debug|x86.Build.0 = Debug|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Release|x86.ActiveCfg = Release|Any CPU
+		{F57C45CD-B4B0-4E44-805F-AA2D79F36210}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

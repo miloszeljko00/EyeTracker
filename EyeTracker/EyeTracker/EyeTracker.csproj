@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\GazepointClient\GazepointClient.csproj" />
+    <ProjectReference Include="..\ScreenRecorder\ScreenRecorder.csproj" />
   </ItemGroup>
 
 </Project>
