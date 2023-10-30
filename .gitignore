@@ -2,6 +2,7 @@
 EyeTracker/GazepointClient/config.yaml
 
 # ignore recording_data files but not the dir itself
+EyeTracker/GazepointClient/recording_data/*
 !EyeTracker/GazepointClient/recording_data/.gitkeep
 
 
