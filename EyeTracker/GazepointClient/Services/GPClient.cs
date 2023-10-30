@@ -92,7 +92,7 @@ namespace GazepointClient.Services
 
                             POG_Best pogBest = (POG_Best)GazepointReader.SignalObjectsDict["ENABLE_SEND_POG_BEST"].Last();
                             Point eyeCoordinates = Point.FractionCoordinatesToAbsoluteCoordinates(new Point(pogBest.BPOGX, pogBest.BPOGY), eyeTrackerConfig.ScreenWidth, eyeTrackerConfig.ScreenHeight);
-                            GazepointReader.SignalObjectsDict["ROI_LABEL"].Add(pointLabeler.LabelSignalObjectsData(eyeCoordinates));
+                            GazepointReader.SignalObjectsDict["ROI_LABEL"].Add(new ROI_Label { Label = pointLabeler.LabelSignalObjectsData(eyeCoordinates) });
                         }
 
                         incoming_data = "";
@@ -118,8 +118,8 @@ namespace GazepointClient.Services
         public void StopRecording()
         {
             cancellationTokenSource.Cancel();
-
-            // TODO(@Vlodson): logic for saving data in GazepointReader.SignalObjectsDict to a csv
+            CSVExporter csvExporter = new();
+            csvExporter.ExportData(GazepointReader.SignalObjectsDict, GetRecordingFilePath(sessionName));
         }
     }
 }

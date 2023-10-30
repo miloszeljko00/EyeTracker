@@ -46,4 +46,9 @@ namespace GazepointClient.Model
 
         public Blink() { }
     }
+
+    public class ROI_Label
+    {
+        public string Label { get; set; } = String.Empty;
+    }
 }
