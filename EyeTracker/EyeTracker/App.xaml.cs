@@ -34,10 +34,10 @@ public partial class App : Application
         string databaseFilePath = "EyeTracker.db";
 
         // Delete the existing database file if it exists
-        //if (File.Exists(databaseFilePath))
-        //{
-        //  File.Delete(databaseFilePath);
-        //}
+        if (File.Exists(databaseFilePath))
+        {
+            File.Delete(databaseFilePath);
+        }
 
         //Contexts
         services.AddDbContext<ApplicationDbContext>(options =>
