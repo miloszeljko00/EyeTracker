@@ -5,8 +5,11 @@
         WindowStyle="None" 
         WindowState="Maximized"
         AllowsTransparency="True"
-        MouseDown="Window_MouseDown"
+        MouseRightButtonDown="Canvas_MouseRightButtonDown"
         KeyDown="Window_KeyDown"
+        MouseLeftButtonDown="Canvas_MouseLeftButtonDown" 
+        MouseLeftButtonUp="Canvas_MouseLeftButtonUp" 
+        MouseMove="Canvas_MouseMove"
         >
 
     <Window.Background>
