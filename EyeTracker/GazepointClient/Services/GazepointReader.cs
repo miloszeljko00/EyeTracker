@@ -10,23 +10,18 @@ using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace GazepointClient
-{
-    public class Configuration
-    {
-        public int ServerPort { get; set; }
-        public string ServerIp { get; set; }
-        public List<int> ScreenSize { get; set; }  // has to be list because YamlDotNet is stupid
-        public List<string> InputSignals { get; set; }
-        public Dictionary<string, Dictionary<string, List<string>>> SignalOutputs { get; set; }
-    }
+using GazepointClient.Model;
 
+namespace GazepointClient.Services
+{
     public class GazepointReader
     {
-        public Configuration Configuration { get; set; }
+        public SignalConfiguration SignalConfiguration { get; set; }
 
         private Dictionary<string, Type> TypeMapping { get; set; }
 
+        // Dict where input signal name is the key and the value is a list of the signal's corresponding objects
+        // In it is also a special key called ROI_LABEL that represents the label at a single timestamp
         public Dictionary<string, List<object>> SignalObjectsDict { get; set; }
 
         public GazepointReader()
@@ -39,17 +34,17 @@ namespace GazepointClient
             using var strReader = new StringReader(yamlString);
 
             var yamlDeserializer = new DeserializerBuilder().WithNamingConvention(UnderscoredNamingConvention.Instance).Build();
-            Configuration = yamlDeserializer.Deserialize<Configuration>(strReader);
+            SignalConfiguration = yamlDeserializer.Deserialize<SignalConfiguration>(strReader);
 
             TypeMapping = new Dictionary<string, Type>
             {
-                { "int", typeof(Int32) },
-                { "float", typeof(Double) },
-                { "bool", typeof(Int32) }  // booleans will be only 1 or 0 anyways and it's much easier to work this way
+                { "int", typeof(int) },
+                { "float", typeof(double) },
+                { "bool", typeof(int) }  // booleans will be only 1 or 0 anyways and it's much easier to work this way
             };
 
             SignalObjectsDict = new Dictionary<string, List<object>>();
-            foreach(string signalName in Configuration.InputSignals)
+            foreach (string signalName in SignalConfiguration.InputSignals)
             {
                 SignalObjectsDict.Add(signalName, new List<object>());
             };
@@ -61,10 +56,10 @@ namespace GazepointClient
             return $"<SET ID=\"{signalName}\" STATE=\"1\" />\r\n";
         }
 
-        public string WriteSignalXMLConfiguration()
+        public string WriteSignalXMLSignalConfiguration()
         {
             string xml = "";
-            foreach(string signalName in Configuration.InputSignals)
+            foreach (string signalName in SignalConfiguration.InputSignals)
             {
                 xml += WriteSignalXMLLine(signalName);
             }
@@ -76,14 +71,14 @@ namespace GazepointClient
 
         private object ParseSingleOutputSignal<T>(string incomingData)
         {
-            T outputSignal = (T) Activator.CreateInstance(typeof(T));
+            T outputSignal = (T)Activator.CreateInstance(typeof(T));
 
             string outputSignalName = typeof(T).Name;
             string yamlSignalName = "ENABLE_SEND_" + outputSignalName.ToUpper();
 
-            Dictionary<string, List<string>> signal = Configuration.SignalOutputs[yamlSignalName];
+            Dictionary<string, List<string>> signal = SignalConfiguration.SignalOutputs[yamlSignalName];
 
-            foreach(var item in signal["params"].Zip(signal["types"], (first, second) => (first, second)))
+            foreach (var item in signal["params"].Zip(signal["types"], (first, second) => (first, second)))
             {
                 var startindex = incomingData.IndexOf($"{item.first}=\"") + $"{item.first}=\"".Length;
                 var endindex = incomingData.IndexOf("\"", startindex);
@@ -101,8 +96,8 @@ namespace GazepointClient
         private string SignalTypeFromSignalName(string signalName)
         {
             string snippedName = signalName.Split("ENABLE_SEND_")[1];
-            
-            if(snippedName.Split("_").Length > 1)
+
+            if (snippedName.Split("_").Length > 1)
             {
                 // for i.e. POG_Best and others like that
                 var underscoreSplit = snippedName.Split("_");
@@ -116,17 +111,17 @@ namespace GazepointClient
         // and values being lists of those objects gotten from the tracker
         public void ParseIncomingDataLine(string incomingData)
         {
-            foreach(string singalName in Configuration.InputSignals)
+            foreach (string signalName in SignalConfiguration.InputSignals)
             {
-                string signalTypeName = SignalTypeFromSignalName(singalName);
-                Type signalType = Type.GetType("GazepointClient."+signalTypeName);
+                string signalTypeName = SignalTypeFromSignalName(signalName);
+                Type signalType = Type.GetType("GazepointClient.Model." + signalTypeName);
 
                 MethodInfo method = typeof(GazepointReader).GetMethod("ParseSingleOutputSignal", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo generic = method.MakeGenericMethod(signalType);
 
                 object result = generic.Invoke(new GazepointReader(), new object[] { incomingData });
 
-                SignalObjectsDict[singalName].Add(result);
+                SignalObjectsDict[signalName].Add(result);
             }
         }
     }

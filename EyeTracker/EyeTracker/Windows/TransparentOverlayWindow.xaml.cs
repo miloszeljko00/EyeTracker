@@ -201,7 +201,7 @@ public partial class TransparentOverlayWindow : Window
 
         if (_lastROIPoint != null)
         {
-            // Create a Line element to connect the last two dots
+            // Create a LineSegment element to connect the last two dots
             Line line = new Line
             {
                 X1 = _lastROIPoint.X,
@@ -327,7 +327,7 @@ public partial class TransparentOverlayWindow : Window
             {
                 if (canvas.Children.Contains(selectionLine)) canvas.Children.Remove(selectionLine);
             }
-            // Create a Line element to connect the first and last dots
+            // Create a LineSegment element to connect the first and last dots
             Line line = new Line
             {
                 X1 = _firstROIPoint.X,
