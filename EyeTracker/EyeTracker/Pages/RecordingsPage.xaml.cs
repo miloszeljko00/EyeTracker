@@ -137,6 +137,13 @@ namespace EyeTracker.Pages
             _recordingService.StartRecordingScreen();
             MessageBox.Show("Recording...", SelectedConfig.Name);
             _recordingService.StopRecordingScreen();
+
+            var result = false;
+            SelectedConfig.ROIs.ForEach(roi =>
+            {
+                 result = _recordingService.DrawROI(roi);
+            });
+
             RefreshTable();
             // ovde se zavrsava
             // TODO: Save recording

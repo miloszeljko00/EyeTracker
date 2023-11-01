@@ -15,7 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using VideoEditor;
 
 namespace EyeTracker;
 
@@ -35,10 +34,10 @@ public partial class App : Application
         string databaseFilePath = "EyeTracker.db";
 
         // Delete the existing database file if it exists
-        if (File.Exists(databaseFilePath))
-        {
-          File.Delete(databaseFilePath);
-        }
+        //if (File.Exists(databaseFilePath))
+        //{
+        //  File.Delete(databaseFilePath);
+        //}
 
         //Contexts
         services.AddDbContext<ApplicationDbContext>(options =>
