@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Contracts;
 
 namespace EyeTracker.Services;
 
@@ -30,18 +31,34 @@ public class RecordingService
         _recorder.Dispose();
         _recorder = null;
     }
-    public bool DrawROI(ROI roi)
+    public bool DrawROI(List<Models.ROI> rois)
     {
-        var points = FromROIPointToDrawablePoints(roi.Points);
-        return Editor.AddPointsAndPolylineToVideo(points, "AAA" + counter++ + ".avi", "AAA" + counter++ + ".avi");
+        List<Contracts.ROI> roiContracts = FromROIsToContractROIs(rois);
+
+        return Editor.AddROIsToRecording(roiContracts, "AAA" + counter++ + ".avi", "AAA" + counter++ + ".avi");
     }
 
-    private List<OpenCvSharp.Point> FromROIPointToDrawablePoints(List<ROIPoint> roiPoints)
+    private List<Contracts.ROI> FromROIsToContractROIs(List<Models.ROI> rois)
     {
-        List<OpenCvSharp.Point> points = new();
+        var roiContracts = new List<Contracts.ROI>();
+        foreach (var roisItem in rois)
+        {
+            roiContracts.Add(new Contracts.ROI()
+            {
+                Id = roisItem.Id.ToString(),
+                Points = FromROIPointToContractPoints(roisItem.Points),
+            });
+        }
+
+        return roiContracts;
+    }
+
+    private List<Contracts.ROIPoint> FromROIPointToContractPoints(List<Models.ROIPoint> roiPoints)
+    {
+        List<Contracts.ROIPoint> points = new();
         foreach (var roiPoint in roiPoints)
         {
-            points.Add(new OpenCvSharp.Point()
+            points.Add(new Contracts.ROIPoint()
             {
                 X = (int)Math.Round(roiPoint.X),
                 Y = (int)Math.Round(roiPoint.Y),

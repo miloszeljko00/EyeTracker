@@ -1,4 +1,5 @@
-﻿using EyeTracker.Models;
+﻿using Contracts;
+using EyeTracker.Models;
 using EyeTracker.Services;
 using EyeTracker.Windows;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,8 +30,8 @@ namespace EyeTracker.Pages
 
         private bool _selectionDisabled = false;
 
-        private ROIConfig _selectedConfig;
-        public ROIConfig SelectedConfig
+        private Models.ROIConfig _selectedConfig;
+        public Models.ROIConfig SelectedConfig
         {
             get { return _selectedConfig; }
             set
@@ -66,13 +67,13 @@ namespace EyeTracker.Pages
             RecordingsDataGrid.ItemsSource = SelectedConfig.Recordings;
         }
 
-        private ROIConfig LoadSelectedConfig()
+        private Models.ROIConfig LoadSelectedConfig()
         {
             if (_roiConfigService.SelectedConfig == null)
             {
                 NavigationService.GoBack();
             }
-            return _roiConfigService.SelectedConfig ?? new ROIConfig();
+            return _roiConfigService.SelectedConfig ?? new Models.ROIConfig();
         }
         private Profile LoadSelectedProfile()
         {
@@ -138,11 +139,7 @@ namespace EyeTracker.Pages
             MessageBox.Show("Recording...", SelectedConfig.Name);
             _recordingService.StopRecordingScreen();
 
-            var result = false;
-            SelectedConfig.ROIs.ForEach(roi =>
-            {
-                 result = _recordingService.DrawROI(roi);
-            });
+            _recordingService.DrawROI(SelectedConfig.ROIs);
 
             RefreshTable();
             // ovde se zavrsava
