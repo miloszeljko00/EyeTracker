@@ -1,8 +1,8 @@
 ﻿using EyeTracker.Pages;
 using EyeTracker.Services;
 using EyeTracker.Windows;
-using GazepointClient;
 using GazepointClient.Interfaces;
+using GazepointClient.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
