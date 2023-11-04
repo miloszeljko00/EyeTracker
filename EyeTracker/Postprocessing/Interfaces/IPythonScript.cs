@@ -10,8 +10,8 @@ namespace Postprocessing.Interfaces
     {
         string GetScriptPath();
 
-        void CallScript();
+        void CallScript(string csv_path, string sessionName);
 
-        string GetResultsPath();
+        string GetResultsPath(string sessionName);
     }
 }
