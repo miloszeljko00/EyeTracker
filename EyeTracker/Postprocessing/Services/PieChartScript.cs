@@ -11,13 +11,6 @@ namespace Postprocessing.Services
 {
     public class PieChartScript : PythonScript
     {
-        public new string GetResultsPath(string sessionName)
-        {
-            string projectPath = GetPostprocessingProjectPath();
-
-            return Path.Join(projectPath, "recording_statistics", sessionName + ".png");
-        }
-
         public new string GetScriptPath()
         {
             string projectPath = GetPostprocessingProjectPath();

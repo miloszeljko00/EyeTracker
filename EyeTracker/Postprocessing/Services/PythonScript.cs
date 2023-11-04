@@ -31,7 +31,9 @@ namespace Postprocessing.Services
 
         public string GetResultsPath(string sessionName)
         {
-            throw new NotImplementedException();
+            string projectPath = GetPostprocessingProjectPath();
+
+            return Path.Join(projectPath, "recording_statistics", sessionName + ".png");
         }
 
         public string GetScriptPath()
