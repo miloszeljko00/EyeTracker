@@ -1,16 +1,15 @@
 ﻿using Postprocessing.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Postprocessing.Services
 {
-    public class PieChartScript : PythonScript
+    public class TimePerRoiScript : PythonScript
     {
+
         public new string GetResultsPath(string sessionName)
         {
             string projectPath = GetPostprocessingProjectPath();
@@ -22,7 +21,7 @@ namespace Postprocessing.Services
         {
             string projectPath = GetPostprocessingProjectPath();
 
-            return Path.Join(projectPath, "Scripts", "region_piechart.py");
+            return Path.Join(projectPath, "Scripts", "time_per_region.py");
         }
     }
 }
