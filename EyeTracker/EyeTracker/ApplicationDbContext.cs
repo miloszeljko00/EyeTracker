@@ -13,6 +13,8 @@ public class ApplicationDbContext: DbContext
     public DbSet<ROIConfig> ROIConfigs { get; set; }
     public DbSet<ROI> ROIs { get; set; }
     public DbSet<ROIPoint> ROIPoints { get; set; }
+    public DbSet<Recording> Recordings { get; set; }
+    public DbSet<RecordingPoint> RecordingPoints { get; set; }
     #endregion
 
     #region Contructor

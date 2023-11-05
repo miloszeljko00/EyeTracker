@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ScreenRecorder
+namespace quick_screen_recorder
 {
     public class Recorder : IDisposable
     {

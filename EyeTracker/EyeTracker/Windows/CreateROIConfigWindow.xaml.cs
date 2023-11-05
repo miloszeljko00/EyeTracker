@@ -17,128 +17,127 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace EyeTracker.Windows
+namespace EyeTracker.Windows;
+
+/// <summary>
+/// Interaction logic for CreateROIConfigWindow.xaml
+/// </summary>
+public partial class CreateROIConfigWindow : Window, INotifyPropertyChanged
 {
-    /// <summary>
-    /// Interaction logic for CreateROIConfigWindow.xaml
-    /// </summary>
-    public partial class CreateROIConfigWindow : Window, INotifyPropertyChanged
+    private readonly ROIConfigService _roiConfigService;
+    private int _numberOfROIs;
+
+    public int NumberOfROIs
     {
-        private readonly ROIConfigService _roiConfigService;
-        private int _numberOfROIs;
-
-        public int NumberOfROIs
-        {
-            get { return _numberOfROIs; }
-            set 
-            { 
-                _numberOfROIs = value;
-                OnPropertyChanged();
-            }
+        get { return _numberOfROIs; }
+        set 
+        { 
+            _numberOfROIs = value;
+            OnPropertyChanged();
         }
+    }
 
-        private ROIConfig _roiConfig;
-        public ROIConfig ROIConfig
-        {
-            get { return _roiConfig; }
-            set 
-            { 
-                _roiConfig = value;
-                OnPropertyChanged();
-            }
+    private ROIConfig _roiConfig;
+    public ROIConfig ROIConfig
+    {
+        get { return _roiConfig; }
+        set 
+        { 
+            _roiConfig = value;
+            OnPropertyChanged();
         }
-        public CreateROIConfigWindow(ROIConfigService roiConfigService)
+    }
+    public CreateROIConfigWindow(ROIConfigService roiConfigService)
+    {
+        _roiConfigService = roiConfigService;
+        _roiConfig = new()
         {
-            _roiConfigService = roiConfigService;
-            _roiConfig = new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "",
-                ROIs = new()
-            };
-            _numberOfROIs = 0;
-            DataContext = this;
-            InitializeComponent();
-        }
+            Id = Guid.NewGuid(),
+            Name = "",
+            ROIs = new()
+        };
+        _numberOfROIs = 0;
+        DataContext = this;
+        InitializeComponent();
+    }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+    public void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape)
-            {
-                Close();
-            }
-        }
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                DragMove();
-            }
-            catch { }
-        }
-
-        private void btnMinimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void btnRestore_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Normal;
-            btnMaximize.Visibility = Visibility.Visible;
-            btnRestore.Visibility = Visibility.Collapsed;
-        }
-
-        private void btnMaximize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Maximized;
-            btnMaximize.Visibility = Visibility.Collapsed;
-            btnRestore.Visibility = Visibility.Visible;
-        }
-
-        private void btnClose_Click(object sender, RoutedEventArgs e)
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
         {
             Close();
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+    }
+    private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        try
         {
-            var app = (App)Application.Current;
-            var window = app.ServiceProvider.GetService<TransparentOverlayWindow>();
-            if (window == null) return;
-            window.Owner = this;
-            window.Owner.Opacity = 0.5;
-            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            window.ROIs = new(ROIConfig.ROIs);
-
-            window.Show();
-
-            window.Owner.Opacity = 1;
-            Focus();
+            DragMove();
         }
+        catch { }
+    }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+    private void btnMinimize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void btnRestore_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Normal;
+        btnMaximize.Visibility = Visibility.Visible;
+        btnRestore.Visibility = Visibility.Collapsed;
+    }
+
+    private void btnMaximize_Click(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Maximized;
+        btnMaximize.Visibility = Visibility.Collapsed;
+        btnRestore.Visibility = Visibility.Visible;
+    }
+
+    private void btnClose_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        var app = (App)Application.Current;
+        var window = app.ServiceProvider.GetService<TransparentOverlayWindow>();
+        if (window == null) return;
+        window.Owner = this;
+        window.Owner.Opacity = 0.5;
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+        window.ROIs = new(ROIConfig.ROIs);
+
+        window.Show();
+
+        window.Owner.Opacity = 1;
+        Focus();
+    }
+
+    private void Button_Click_1(object sender, RoutedEventArgs e)
+    {
+        if (ROIConfig.Name == "")
         {
-            if (ROIConfig.Name == "")
-            {
-                MessageBox.Show("Name can't be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            if (ROIConfig.ROIs.Count == 0)
-            {
-                MessageBox.Show("Atleast 1 ROI must be marked.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            _roiConfigService.Create(ROIConfig);
-            Close();
+            MessageBox.Show("Name can't be empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
+        if (ROIConfig.ROIs.Count == 0)
+        {
+            MessageBox.Show("Atleast 1 ROI must be marked.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+        _roiConfigService.Create(ROIConfig);
+        Close();
     }
 }

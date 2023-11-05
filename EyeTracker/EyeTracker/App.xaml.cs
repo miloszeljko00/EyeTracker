@@ -34,10 +34,10 @@ public partial class App : Application
         string databaseFilePath = "EyeTracker.db";
 
         // Delete the existing database file if it exists
-        if (File.Exists(databaseFilePath))
-        {
-            File.Delete(databaseFilePath);
-        }
+        //if (File.Exists(databaseFilePath))
+        //{
+        //    File.Delete(databaseFilePath);
+        //}
 
         //Contexts
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -49,6 +49,7 @@ public partial class App : Application
         services.AddSingleton<MainWindow>();
         services.AddTransient<CreateROIConfigWindow>();
         services.AddTransient<TransparentOverlayWindow>();
+        services.AddTransient<VideoPlayerWindow>();
 
         //Pages
         services.AddTransient<ConnectEyeTrackerPage>();

@@ -23,7 +23,7 @@ public class Editor
                 Console.WriteLine("Error: Video file could not be opened.");
                 return false; // Exit the function or handle the error appropriately
             }
-            videoWriter = new VideoWriter(outputVideoPath, OpenCvSharp.FourCC.XVID, 30, new Size((int)videoCapture.FrameWidth, (int)videoCapture.FrameHeight));
+            videoWriter = new VideoWriter(outputVideoPath, OpenCvSharp.FourCC.XVID, 15, new Size((int)videoCapture.FrameWidth, (int)videoCapture.FrameHeight));
 
             while (true)
             {

@@ -50,6 +50,8 @@ namespace EyeTracker.Pages
                 OnPropertyChanged();
             }
         }
+
+        public ObservableCollection<Recording> Recordings;
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -64,7 +66,7 @@ namespace EyeTracker.Pages
             _selectedProfile = LoadSelectedProfile();
             DataContext = this;
             InitializeComponent();
-            RecordingsDataGrid.ItemsSource = SelectedConfig.Recordings;
+            RecordingsDataGrid.ItemsSource = new ObservableCollection<Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
         }
 
         private Models.ROIConfig LoadSelectedConfig()
@@ -86,13 +88,24 @@ namespace EyeTracker.Pages
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void ROIConfigsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RecordingsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_selectionDisabled) return;
             if (RecordingsDataGrid.SelectedItem != null)
             {
                 var recording = (Recording)RecordingsDataGrid.SelectedItem;
-                MessageBox.Show(recording.Id + " playing recorded video...");
+                _recordingService.SelectedRecording = recording;
+                RecordingsDataGrid.UnselectAll();
+                var app = (App)Application.Current;
+
+                var window = app.ServiceProvider.GetService<VideoPlayerWindow>();
+                if (window == null) return;
+
+                window.Owner = app.MainWindow;
+                window.Owner.Opacity = 0.5;
+                window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                window.ShowDialog();
+                window.Owner.Opacity = 1;
 
                 RecordingsDataGrid.SelectedItem = null;
             }
@@ -135,12 +148,13 @@ namespace EyeTracker.Pages
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // ovde pocinje recording
-            _recordingService.StartRecordingScreen();
+            _recordingService.StartRecordingScreen(SelectedProfile, SelectedConfig);
             MessageBox.Show("Recording...", SelectedConfig.Name);
             _recordingService.StopRecordingScreen();
 
             _recordingService.DrawROI(SelectedConfig.ROIs);
 
+            RecordingsDataGrid.ItemsSource = new ObservableCollection<Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
             RefreshTable();
             // ovde se zavrsava
             // TODO: Save recording
