@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowScrape", "WindowScrap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GazepointClient", "GazepointClient\GazepointClient.csproj", "{3EE85DA0-B508-4C1C-9298-BEFA5CFC2FEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postprocessing", "Postprocessing\Postprocessing.csproj", "{B4F290AE-13F3-4743-9399-FC351A6D9DED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|x86.ActiveCfg = Release|Any CPU
 		{F96DC003-7FA9-4AB9-BBF8-3B22B8878A65}.Release|x86.Build.0 = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
