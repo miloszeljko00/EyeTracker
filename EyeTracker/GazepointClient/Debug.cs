@@ -62,7 +62,7 @@ namespace GazepointClient
 
             EyeTrackerConfig eyeTrackerConfig = new EyeTrackerConfig
             {
-                Address = "172.21.208.1",
+                Address = "169.254.166.159",
                 Port = "4242",
                 ScreenHeight = 1080,
                 ScreenWidth = 1920,

@@ -51,7 +51,7 @@ namespace EyeTracker.Pages
             }
         }
 
-        public ObservableCollection<Recording> Recordings;
+        public ObservableCollection<Models.Recording> Recordings;
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -66,7 +66,7 @@ namespace EyeTracker.Pages
             _selectedProfile = LoadSelectedProfile();
             DataContext = this;
             InitializeComponent();
-            RecordingsDataGrid.ItemsSource = new ObservableCollection<Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
+            RecordingsDataGrid.ItemsSource = new ObservableCollection<Models.Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
         }
 
         private Models.ROIConfig LoadSelectedConfig()
@@ -93,7 +93,7 @@ namespace EyeTracker.Pages
             if (_selectionDisabled) return;
             if (RecordingsDataGrid.SelectedItem != null)
             {
-                var recording = (Recording)RecordingsDataGrid.SelectedItem;
+                var recording = (Models.Recording)RecordingsDataGrid.SelectedItem;
                 _recordingService.SelectedRecording = recording;
                 RecordingsDataGrid.UnselectAll();
                 var app = (App)Application.Current;
@@ -150,14 +150,13 @@ namespace EyeTracker.Pages
             // ovde pocinje recording
             _recordingService.StartRecordingScreen(SelectedProfile, SelectedConfig);
             MessageBox.Show("Recording...", SelectedConfig.Name);
-            _recordingService.StopRecordingScreen();
+            var recording = _recordingService.StopRecordingScreen();
 
-            _recordingService.DrawROI(SelectedConfig.ROIs);
+            if (recording == null) return;
+            _recordingService.DrawRecording(recording);
 
-            RecordingsDataGrid.ItemsSource = new ObservableCollection<Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
+            RecordingsDataGrid.ItemsSource = new ObservableCollection<Models.Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
             RefreshTable();
-            // ovde se zavrsava
-            // TODO: Save recording
         }
     }
 }

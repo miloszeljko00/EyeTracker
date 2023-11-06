@@ -1,0 +1,54 @@
+# COPY THIS FILE AND REMOVE THE TEMPLATE PART TO USE OWN CONFIGURATION
+
+# signals from the tracker, uncomment those that you want to use
+# for more information read Gazepoint API.pdf
+input_signals:
+    - "ENABLE_SEND_COUNTER"
+    - "ENABLE_SEND_TIME"
+    - "ENABLE_SEND_POG_BEST"  # at least this one is needed for everything to work
+    - "ENABLE_SEND_CURSOR"
+    - "ENABLE_SEND_BLINK"
+
+# output for each of the signals defined above
+signal_outputs:
+    ENABLE_SEND_COUNTER:
+        params:
+            - "CNT"
+        types:
+            - "int"
+
+    ENABLE_SEND_TIME:
+        params:
+            - "TIME"
+        types:
+            - "float"
+
+    ENABLE_SEND_POG_BEST:
+        params:
+            - "BPOGX"
+            - "BPOGY"
+            - "BPOGV"
+        types:
+            - "float"
+            - "float"
+            - "bool"
+
+    ENABLE_SEND_CURSOR:
+        params:
+            - "CX"
+            - "CY"
+            - "CS"
+        types:
+            - "float"
+            - "float"
+            - "int"
+
+    ENABLE_SEND_BLINK:
+        params:
+            - "BKID"
+            - "BKDUR"
+            - "BKPMIN"
+        types:
+            - "int"
+            - "float"
+            - "int"

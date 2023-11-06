@@ -11,8 +11,11 @@ namespace ScreenRecorder;
 
 public class Editor
 {
-    public static bool AddROIsToRecording(List<ROI> rois, string inputVideoPath, string outputVideoPath)
+    public static bool DrawRecording(Recording recording, string inputVideoPath, string outputVideoPath)
     {
+        var rois = recording.ROIConfig.ROIs;
+        var recordingPoints = recording.Points.OrderBy(x => x.Order).ToList();
+
         VideoCapture? videoCapture = null;
         VideoWriter? videoWriter = null;
         try
@@ -25,12 +28,29 @@ public class Editor
             }
             videoWriter = new VideoWriter(outputVideoPath, OpenCvSharp.FourCC.XVID, 15, new Size((int)videoCapture.FrameWidth, (int)videoCapture.FrameHeight));
 
+            var totalFrames = videoCapture.FrameCount;
+            var pointsToDrawCount = recordingPoints.Count / totalFrames;
+            int step = Math.Max(1, recordingPoints.Count / pointsToDrawCount);
+            var pointsToDraw = new List<RecordingPoint>();
+            for (int i = 0; i < recordingPoints.Count; i += step)
+            {
+                pointsToDraw.Add(recordingPoints[i]);
+            }
+            var frameCounter = 0;
+            var currentPointIndex = 0;
+            var framesPerPoint = totalFrames / pointsToDrawCount;
             while (true)
             {
                 Mat frame = new();
                 if (!videoCapture.Read(frame)) break;
                 if (frame.Empty()) break;
-
+                if(frameCounter < framesPerPoint)
+                {
+                    currentPointIndex++;
+                    if (currentPointIndex >= pointsToDraw.Count) currentPointIndex = pointsToDraw.Count - 1;
+                }
+                Cv2.Circle(frame, new Point(pointsToDraw[currentPointIndex].X, pointsToDraw[currentPointIndex].Y), 5, new Scalar(0, 0, 255), -1);
+                
                 foreach (ROI roi in rois)
                 {
                     var points = new List<OpenCvSharp.Point>();
@@ -42,10 +62,18 @@ public class Editor
                             Y = int.Parse(Math.Round(roiPoint.Y).ToString()),
                         });
                     }
-                    Cv2.Polylines(frame, new[] { points.ToArray() }, isClosed: true, color: new Scalar(0, 0, 255), thickness: 2);
+                    if (pointsToDraw[currentPointIndex].Label == roi.Id)
+                    {
+                        Cv2.Polylines(frame, new[] { points.ToArray() }, isClosed: true, color: new Scalar(255, 0, 0), thickness: 2);
+                    }
+                    else
+                    {
+                        Cv2.Polylines(frame, new[] { points.ToArray() }, isClosed: true, color: new Scalar(0, 0, 255), thickness: 2);
+                    }
                 }
 
                 videoWriter.Write(frame);
+                frameCounter++;
             }
         }
         finally

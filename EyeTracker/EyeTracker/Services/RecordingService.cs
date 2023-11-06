@@ -1,9 +1,12 @@
 ﻿using EyeTracker.Models;
+using GazepointClient.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ScreenRecorder;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 
 namespace EyeTracker.Services;
@@ -11,13 +14,15 @@ namespace EyeTracker.Services;
 public class RecordingService
 {
     private readonly ApplicationDbContext _context;
+    private IGPClient _gpClient { get; set; }
     private Recorder? _recorder;
     private Recording? CurrentRecording { get; set; }
     public Recording? SelectedRecording { get; set; }
     private int counter = 1;
-    public RecordingService(ApplicationDbContext context)
+    public RecordingService(ApplicationDbContext context, IGPClient pgClient)
     {
         _context = context;
+        _gpClient = pgClient;
     }
 
     public void StartRecordingScreen(Profile profile, ROIConfig config)
@@ -39,27 +44,123 @@ public class RecordingService
             VideoUrl = id.ToString() + ".avi",
             Points = new(),
         };
+        var etConfig = _context.EyeTrackerConfigs.First();
+        etConfig.ScreenWidth = screenWidth;
+        etConfig.ScreenHeight = screenHeight;
+
+        var roiConfig = new Contracts.ROIConfig() 
+        { 
+            Id = config.Id.ToString(),
+            ROIs = FromROIsToContractROIs(config.ROIs),
+        };
+        var eyeTrackerConfig = new Contracts.EyeTrackerConfig()
+        {
+            Address = etConfig.Address,
+            Port = etConfig.Port,
+            ScreenWidth = etConfig.ScreenWidth,
+            ScreenHeight = etConfig.ScreenHeight,
+        };
+        _gpClient.StartRecording(roiConfig, eyeTrackerConfig);
     }
-    public void StopRecordingScreen()
+    public Recording? StopRecordingScreen()
     {
-        if(_recorder == null) return;
-        if(CurrentRecording == null) return;
+        if(_recorder == null) return null;
+        if(CurrentRecording == null) return null;
         _recorder.Dispose();
         _recorder = null;
+        _gpClient.StopRecording();
+        var recordingFilePath = _gpClient.GetRecordingFilePath(CurrentRecording.ROIConfig.Id.ToString());
+        List<RecordingPoint> recordingPoints = new();
+        try
+        {
+            using (var reader = new StreamReader(@recordingFilePath))
+            {
+            
+                reader.ReadLine();
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) continue;
+                    var values = line.Split(',');
+
+                    var xPercentage = double.Parse(values[2]) / 100000D;
+                    var yPercentage = double.Parse(values[3]) / 100000D;
+                    Screen primaryScreen = Screen.PrimaryScreen;
+                    int screenWidth = primaryScreen.Bounds.Width;
+                    int screenHeight = primaryScreen.Bounds.Height;
+
+                    var recordingPoint = new RecordingPoint()
+                    {
+                        Id = Guid.NewGuid(),
+                        Order = int.Parse(values[0]),
+                        Timestamp = long.Parse(values[1]),
+                        X = xPercentage * screenWidth,
+                        Y = yPercentage * screenHeight,
+                        Label = values[11],
+                    };
+                    recordingPoints.Add(recordingPoint);
+                } 
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        CurrentRecording.Points = recordingPoints;
         CurrentRecording.RecordingEnd = DateTime.Now;
         CurrentRecording.Profile = _context.Profiles.Where(x => x.Id == CurrentRecording.Profile.Id).First();
-        CurrentRecording.ROIConfig = _context.ROIConfigs.Where(x => x.Id == CurrentRecording.ROIConfig.Id).First();
+        CurrentRecording.ROIConfig = _context.ROIConfigs.Where(x => x.Id == CurrentRecording.ROIConfig.Id).Include(x => x.ROIs).First();
         _context.Add(CurrentRecording);
         _context.SaveChanges();
+        return CurrentRecording;
     }
-    public bool DrawROI(List<Models.ROI> rois)
+    public bool DrawRecording(Recording recording)
     {
+        recording = _context.Recordings.Where(x => x.Id == recording.Id)
+                .Include(x => x.ROIConfig)
+                .Include(x => x.Points)
+            .First();
         if (CurrentRecording == null) return false;
-        List<Contracts.ROI> roiContracts = FromROIsToContractROIs(rois);
 
-        var result = Editor.AddROIsToRecording(roiContracts, "out.avi", CurrentRecording.VideoUrl);
+        var result = Editor.DrawRecording(FromRecordingToContractRecording(recording), "out.avi", CurrentRecording.VideoUrl);
         CurrentRecording = null;
         return result;
+    }
+    private Contracts.Recording FromRecordingToContractRecording(Models.Recording recording)
+    {
+        return new Contracts.Recording()
+        {
+            Points = FromRecordingPointsToContractRecordingPoints(recording.Points),
+            ROIConfig = FromROIConfigToContractROIConfig(recording.ROIConfig),
+            RecordingEnd = recording.RecordingEnd,
+            RecordingStart = recording.RecordingStart,
+        };
+    }
+
+    private Contracts.ROIConfig FromROIConfigToContractROIConfig(ROIConfig rOIConfig)
+    {
+        return new Contracts.ROIConfig()
+        {
+            Id = rOIConfig.Id.ToString(),
+            ROIs = FromROIsToContractROIs(rOIConfig.ROIs),
+        };
+    }
+
+    private List<Contracts.RecordingPoint> FromRecordingPointsToContractRecordingPoints(List<RecordingPoint> points)
+    {
+        var recordingPoints = new List<Contracts.RecordingPoint>();
+        foreach (var point in points)
+        {
+            recordingPoints.Add(new Contracts.RecordingPoint()
+            {
+                Order = point.Order,
+                Timestamp = point.Timestamp,
+                X = point.X,
+                Y = point.Y,
+                Label = point.Label,
+            });
+        }
+        return recordingPoints;
     }
 
     private List<Contracts.ROI> FromROIsToContractROIs(List<Models.ROI> rois)

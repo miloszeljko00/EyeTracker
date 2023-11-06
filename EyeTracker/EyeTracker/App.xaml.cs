@@ -61,7 +61,7 @@ public partial class App : Application
         services.AddSingleton<EyeTrackerConfigService>();
         services.AddSingleton<ProfileService>();
         services.AddSingleton<ROIConfigService>();
-        services.AddSingleton<GPClient>();
+        services.AddSingleton<IGPClient, GPClient>();
         services.AddSingleton<RecordingService>();
     }
 
