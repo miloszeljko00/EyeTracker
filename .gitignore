@@ -1,9 +1,16 @@
+# ignore pycache folder
+*__pycache__*
+
 # ignore config and leave just the template
 EyeTracker/GazepointClient/config.yaml
 
 # ignore recording_data files but not the dir itself
 EyeTracker/GazepointClient/recording_data/*
 !EyeTracker/GazepointClient/recording_data/.gitkeep
+
+# ignore recording_statistics files but not the folder
+EyeTracker/Postprocessing/recording_statistics/*
+!EyeTracker/Postprocessing/recording_statistics/.gitkeep
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/csharp,python,dotnetcore,vs,pycharm
