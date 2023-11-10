@@ -13,6 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Cont
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenRecorder", "ScreenRecorder\ScreenRecorder.csproj", "{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Postprocessing", "Postprocessing\Postprocessing.csproj", "{B4F290AE-13F3-4743-9399-FC351A6D9DED}"
+EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +64,14 @@ Global
 		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|x86.ActiveCfg = Release|Any CPU
 		{AC84663F-7DA3-44A4-9AF0-D9C7BFAD8E91}.Release|x86.Build.0 = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4F290AE-13F3-4743-9399-FC351A6D9DED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
