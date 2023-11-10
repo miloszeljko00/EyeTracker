@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using YamlDotNet.Core;
 
 namespace EyeTracker.Pages
 {
@@ -107,7 +108,7 @@ namespace EyeTracker.Pages
                 window.ShowDialog();
                 window.Owner.Opacity = 1;
 
-                RecordingsDataGrid.SelectedItem = null;
+                RefreshTable();
             }
         }
 
@@ -134,14 +135,24 @@ namespace EyeTracker.Pages
             RecordingsDataGrid.Items.Refresh();
         }
 
-        private void Edit_Button_Click(object sender, RoutedEventArgs e)
+        private void Statistics_Button_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("EDIT");
             RefreshTable();
         }
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("DELETE");
+            if (sender is FrameworkElement element && element.DataContext is Models.Recording rec)
+            {
+                var result = MessageBox.Show("Confirm delete?", "Delete recording", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var recording = (Models.Recording)RecordingsDataGrid.SelectedItem;
+                    if (recording == null) return;
+                    _recordingService.DeleteRecordingById(recording.Id);
+                    RecordingsDataGrid.ItemsSource = new ObservableCollection<Models.Recording>(_recordingService.GetAllForConfig(SelectedConfig.Id));
+                }
+            }
             RefreshTable();
         }
 

@@ -118,7 +118,7 @@
                     </DataGridTemplateColumn.CellStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Cursor="Hand" Height="38" Click="Edit_Button_Click">Edit</Button>
+                            <Button Cursor="Hand" Height="38" Click="Statistics_Button_Click">Statistics</Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

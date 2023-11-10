@@ -31,6 +31,11 @@ public class RecordingService
         Screen primaryScreen = Screen.PrimaryScreen;
         int screenWidth = primaryScreen.Bounds.Width;
         int screenHeight = primaryScreen.Bounds.Height;
+        config = _context.ROIConfigs.Where(x => x.Id == config.Id).Include(x => x.ROIs).ThenInclude(x => x.Points).First();
+        foreach (var roi in config.ROIs)
+        {
+            roi.Points = roi.Points.OrderBy(p => p.Order).ToList();
+        }
         if (_recorder != null) return;
         _recorder = new Recorder("out.avi", 100, 0, 0, screenWidth, screenHeight, true, -1, false);
         var id = Guid.NewGuid();
@@ -60,7 +65,7 @@ public class RecordingService
             ScreenWidth = etConfig.ScreenWidth,
             ScreenHeight = etConfig.ScreenHeight,
         };
-        _gpClient.StartRecording(roiConfig, eyeTrackerConfig);
+        _gpClient.StartRecording(roiConfig, eyeTrackerConfig, CurrentRecording.Id.ToString());
     }
     public Recording? StopRecordingScreen()
     {
@@ -69,7 +74,7 @@ public class RecordingService
         _recorder.Dispose();
         _recorder = null;
         _gpClient.StopRecording();
-        var recordingFilePath = _gpClient.GetRecordingFilePath(CurrentRecording.ROIConfig.Id.ToString());
+        var recordingFilePath = _gpClient.GetRecordingFilePath(CurrentRecording.Id.ToString());
         List<RecordingPoint> recordingPoints = new();
         try
         {
@@ -112,6 +117,7 @@ public class RecordingService
         CurrentRecording.ROIConfig = _context.ROIConfigs.Where(x => x.Id == CurrentRecording.ROIConfig.Id).Include(x => x.ROIs).First();
         _context.Add(CurrentRecording);
         _context.SaveChanges();
+        _context.Entry(CurrentRecording).State = EntityState.Detached;
         return CurrentRecording;
     }
     public bool DrawRecording(Recording recording)
@@ -119,7 +125,13 @@ public class RecordingService
         recording = _context.Recordings.Where(x => x.Id == recording.Id)
                 .Include(x => x.ROIConfig)
                 .Include(x => x.Points)
+                .Include(x => x.ROIConfig.ROIs)
+                .ThenInclude(x => x.Points)
             .First();
+        foreach (var roi in recording.ROIConfig.ROIs)
+        {
+            roi.Points = roi.Points.OrderBy(p => p.Order).ToList();
+        }
         if (CurrentRecording == null) return false;
 
         var result = Editor.DrawRecording(FromRecordingToContractRecording(recording), "out.avi", CurrentRecording.VideoUrl);
@@ -199,5 +211,16 @@ public class RecordingService
                 .Include(x => x.ROIConfig)
                 .Include(x => x.Profile)
             .AsNoTracking().ToList();
+    }
+
+    public bool DeleteRecordingById(Guid recordingId)
+    {
+        var recording =  _context.Recordings
+            .Where(x => x.Id == recordingId).Include(x => x.Points).FirstOrDefault();
+        if (recording == null) return false;
+        _context.RecordingPoints.RemoveRange(recording.Points);
+        _context.Recordings.Remove(recording);
+        _context.SaveChanges();
+        return true;
     }
 }

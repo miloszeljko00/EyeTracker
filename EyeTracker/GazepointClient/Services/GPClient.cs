@@ -105,9 +105,9 @@ namespace GazepointClient.Services
             gp3Client.Close();
         }
 
-        public void StartRecording(ROIConfig roiConfig, EyeTrackerConfig eyeTrackerConfig)
+        public void StartRecording(ROIConfig roiConfig, EyeTrackerConfig eyeTrackerConfig, string recordingId)
         {
-            sessionName = roiConfig.Id;
+            sessionName = recordingId;
 
             PointLabeler pointLabeler = new PointLabeler(roiConfig);
 

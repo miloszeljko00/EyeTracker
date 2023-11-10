@@ -14,8 +14,10 @@ public class Editor
     public static bool DrawRecording(Recording recording, string inputVideoPath, string outputVideoPath)
     {
         var rois = recording.ROIConfig.ROIs;
-        var recordingPoints = recording.Points.OrderBy(x => x.Order).ToList();
-
+        var recordingPoints = recording.Points.OrderBy(x => x.Timestamp).ToList();
+        var recordingStartTimestamp = recording.Points.First().Timestamp;
+        var recordingEndTimestamp = recording.Points.Last().Timestamp;
+        var recordingDuration = recordingEndTimestamp - recordingStartTimestamp;
         VideoCapture? videoCapture = null;
         VideoWriter? videoWriter = null;
         try
@@ -28,29 +30,55 @@ public class Editor
             }
             videoWriter = new VideoWriter(outputVideoPath, OpenCvSharp.FourCC.XVID, 15, new Size((int)videoCapture.FrameWidth, (int)videoCapture.FrameHeight));
 
+            var pointsToDraw = new List<Point>();
             var totalFrames = videoCapture.FrameCount;
-            var pointsToDrawCount = recordingPoints.Count / totalFrames;
-            int step = Math.Max(1, recordingPoints.Count / pointsToDrawCount);
-            var pointsToDraw = new List<RecordingPoint>();
-            for (int i = 0; i < recordingPoints.Count; i += step)
+            var totalPoints = recordingPoints.Count;
+            var pointsPerFrame = totalPoints / totalFrames;
+            var durationPerFrame = recordingDuration / totalFrames;
+
+            for ( var i = 0; i < totalFrames; i++)
             {
-                pointsToDraw.Add(recordingPoints[i]);
+                int startIndex = i * pointsPerFrame;
+                int endIndex = Math.Min((i + 1) * pointsPerFrame, recordingPoints.Count);
+
+                // Calculate the mean X and Y values for the subset of points
+                double meanX = 0;
+                double meanY = 0;
+
+                for (int j = startIndex; j < endIndex; j++)
+                {
+                    meanX += recordingPoints[j].X;
+                    meanY += recordingPoints[j].Y;
+                }
+
+                meanX /= (endIndex - startIndex);
+                meanY /= (endIndex - startIndex);
+                pointsToDraw.Add(new Point((int)meanX, (int)meanY));
             }
-            var frameCounter = 0;
-            var currentPointIndex = 0;
-            var framesPerPoint = totalFrames / pointsToDrawCount;
+
+
+
+            var currentFrame = 0;
             while (true)
             {
                 Mat frame = new();
                 if (!videoCapture.Read(frame)) break;
                 if (frame.Empty()) break;
-                if(frameCounter < framesPerPoint)
+
+
+                int trailLength = 5;
+                // Draw a trail of circles for previous points
+                for (int i = Math.Max(0, currentFrame - trailLength); i < currentFrame; i++)
                 {
-                    currentPointIndex++;
-                    if (currentPointIndex >= pointsToDraw.Count) currentPointIndex = pointsToDraw.Count - 1;
+                    double opacity = 1.0 - ((double)(currentFrame - i) / trailLength);
+                    Scalar color = new Scalar(0, 200, 0, opacity * 255);
+                    Cv2.Circle(frame, new Point(pointsToDraw[i].X, pointsToDraw[i].Y), 5, color, -1);
                 }
-                Cv2.Circle(frame, new Point(pointsToDraw[currentPointIndex].X, pointsToDraw[currentPointIndex].Y), 5, new Scalar(0, 0, 255), -1);
-                
+
+                // Draw the current point with a different color
+                Cv2.Circle(frame, new Point(pointsToDraw[currentFrame].X, pointsToDraw[currentFrame].Y), 10, new Scalar(0, 255, 0), -1);
+
+
                 foreach (ROI roi in rois)
                 {
                     var points = new List<OpenCvSharp.Point>();
@@ -62,7 +90,7 @@ public class Editor
                             Y = int.Parse(Math.Round(roiPoint.Y).ToString()),
                         });
                     }
-                    if (pointsToDraw[currentPointIndex].Label == roi.Id)
+                    if (recordingPoints[currentFrame].Label == roi.Id)
                     {
                         Cv2.Polylines(frame, new[] { points.ToArray() }, isClosed: true, color: new Scalar(255, 0, 0), thickness: 2);
                     }
@@ -73,7 +101,7 @@ public class Editor
                 }
 
                 videoWriter.Write(frame);
-                frameCounter++;
+                currentFrame++;
             }
         }
         finally

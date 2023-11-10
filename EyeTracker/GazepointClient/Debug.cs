@@ -62,13 +62,13 @@ namespace GazepointClient
 
             EyeTrackerConfig eyeTrackerConfig = new EyeTrackerConfig
             {
-                Address = "169.254.166.159",
+                Address = "192.168.79.209",
                 Port = "4242",
                 ScreenHeight = 1080,
                 ScreenWidth = 1920,
             };
 
-            client.StartRecording(roiConfig, eyeTrackerConfig);
+            client.StartRecording(roiConfig, eyeTrackerConfig, "debug-config");
 
             Console.WriteLine("Press any key to stop reading from the server...");
             Console.ReadKey();
