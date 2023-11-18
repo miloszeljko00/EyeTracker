@@ -1,3 +1,6 @@
+# ignore sessions.yaml
+EyeTracker/Postprocessing/Scripts/sessions.yaml
+
 # ignore pycache folder
 *__pycache__*
 

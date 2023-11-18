@@ -56,7 +56,7 @@ namespace GazepointClient
 
             ROIConfig roiConfig = new ROIConfig
             {
-                Id = "session1",
+                Id = "session5",
                 ROIs = new List<ROI> { roi1, roi2 }
             };
 
