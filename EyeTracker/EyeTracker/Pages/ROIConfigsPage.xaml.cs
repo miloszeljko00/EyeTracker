@@ -72,6 +72,7 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         if (ROIConfigsDataGrid.SelectedItem != null)
         {
             _roiConfigService.SelectedConfig = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
+            ROIConfigsDataGrid.UnselectAll();
             var app = (App)Application.Current;
             NavigationService.Navigate(app.ServiceProvider.GetService<RecordingsPage>());
         }

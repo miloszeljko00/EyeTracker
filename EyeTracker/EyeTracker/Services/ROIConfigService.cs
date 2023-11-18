@@ -1,10 +1,7 @@
 ﻿using EyeTracker.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EyeTracker.Services;
 
@@ -21,10 +18,29 @@ public class ROIConfigService
 
     public List<ROIConfig> GetROIConfigs()
     {
-       return _context.ROIConfigs.AsNoTracking().ToList();
+       var roiConfigs = _context.ROIConfigs
+            .Include(x=>x.ROIs)
+                .ThenInclude(x=>x.Points)
+            .AsNoTracking()
+        .ToList();
+
+        roiConfigs
+            .ForEach(config => config.ROIs
+                .ForEach(roi => roi.Points = roi.Points.OrderBy(point => point.Order)
+            .ToList()));
+
+        return roiConfigs;        
     }
     public ROIConfig Create(ROIConfig config)
     {
+        foreach (var roi in config.ROIs)
+        {
+            var order = 1;
+            foreach (var point in roi.Points)
+            {
+                point.Order = order++;
+            }
+        }
         _context.ROIConfigs.Add(config);
         _context.SaveChanges();
         _context.Entry(config).State = EntityState.Detached;

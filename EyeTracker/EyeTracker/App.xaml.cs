@@ -6,6 +6,7 @@ using GazepointClient.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using ScreenRecorder;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -33,10 +34,10 @@ public partial class App : Application
         string databaseFilePath = "EyeTracker.db";
 
         // Delete the existing database file if it exists
-        if (File.Exists(databaseFilePath))
-        {
-          File.Delete(databaseFilePath);
-        }
+        //if (File.Exists(databaseFilePath))
+        //{
+        //    File.Delete(databaseFilePath);
+        //}
 
         //Contexts
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -48,6 +49,7 @@ public partial class App : Application
         services.AddSingleton<MainWindow>();
         services.AddTransient<CreateROIConfigWindow>();
         services.AddTransient<TransparentOverlayWindow>();
+        services.AddTransient<VideoPlayerWindow>();
 
         //Pages
         services.AddTransient<ConnectEyeTrackerPage>();
@@ -59,7 +61,8 @@ public partial class App : Application
         services.AddSingleton<EyeTrackerConfigService>();
         services.AddSingleton<ProfileService>();
         services.AddSingleton<ROIConfigService>();
-        services.AddSingleton<GPClient>();
+        services.AddSingleton<IGPClient, GPClient>();
+        services.AddSingleton<RecordingService>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)
