@@ -24,12 +24,12 @@ namespace GazepointClient
             };
             ROIPoint p3 = new ROIPoint
             {
-                X = startX,
+                X = endX,
                 Y = endY,
             };
             ROIPoint p4 = new ROIPoint
             {
-                X = endX,
+                X = startX,
                 Y = endY,
             };
 
@@ -40,8 +40,8 @@ namespace GazepointClient
         {
             GPClient client = new();
             
-            var roiPoints1 = RectangleROIPoints(10, 10, 100, 100);
-            var roiPoints2 = RectangleROIPoints(1000, 1000, 1100, 1100);
+            var roiPoints1 = RectangleROIPoints(0, 0, 1920, 440);
+            var roiPoints2 = RectangleROIPoints(0, 640, 1920, 1080);
 
             var roi1 = new ROI
             {
@@ -62,7 +62,7 @@ namespace GazepointClient
 
             EyeTrackerConfig eyeTrackerConfig = new EyeTrackerConfig
             {
-                Address = "192.168.79.209",
+                Address = "172.22.112.1",
                 Port = "4242",
                 ScreenHeight = 1080,
                 ScreenWidth = 1920,
