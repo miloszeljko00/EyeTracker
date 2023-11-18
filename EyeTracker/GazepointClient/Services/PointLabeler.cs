@@ -64,8 +64,10 @@ namespace GazepointClient.Services
             return intersections;
         }
 
-        public string LabelSignalObjectsData(Point point)
+        public string LabelSignalObjectsData(Point point, int screenHeight, int screenWidth)
         {
+            if ((point.X > screenWidth) || (point.X < 0) || (point.Y > screenHeight) || (point.Y < 0)) return "Outside of screen";
+
             int intersections;
 
             foreach (RegionOfInterest regionOfInterest in RegionsOfInterest)
