@@ -40,23 +40,23 @@ namespace GazepointClient
         {
             GPClient client = new();
             
-            var roiPoints1 = RectangleROIPoints(0, 0, 1920, 440);
-            var roiPoints2 = RectangleROIPoints(0, 640, 1920, 1080);
+            var roiPoints1 = RectangleROIPoints(0, 0, 640, 1080);
+            var roiPoints2 = RectangleROIPoints(1280, 0, 1920, 1080);
 
             var roi1 = new ROI
             {
-                Id = "roi1",
+                Id = "leftRoI",
                 Points = roiPoints1
             };
             var roi2 = new ROI
             {
-                Id = "roi2",
+                Id = "rightRoI",
                 Points = roiPoints2
             };
 
             ROIConfig roiConfig = new ROIConfig
             {
-                Id = "debug-config",
+                Id = "session1",
                 ROIs = new List<ROI> { roi1, roi2 }
             };
 
@@ -68,7 +68,7 @@ namespace GazepointClient
                 ScreenWidth = 1920,
             };
 
-            client.StartRecording(roiConfig, eyeTrackerConfig, "debug-config");
+            client.StartRecording(roiConfig, eyeTrackerConfig, roiConfig.Id);
 
             Console.WriteLine("Press any key to stop reading from the server...");
             Console.ReadKey();
