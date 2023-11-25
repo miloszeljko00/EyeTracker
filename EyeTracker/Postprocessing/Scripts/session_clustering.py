@@ -1,10 +1,7 @@
 """
-Author comments:
-- If all sessions are not of equal lenght not many may be clustered,
-  right now by default, not all sessions are equal length
-
-- To introduce equal length sessions, one can clip all sessions
-  to be the lenght of the shortest one
+This script provides two ways of clustering sessions:
+    - Sequence graph embedding (sge)
+    - Sequence edit distance
 """
 
 from typing import Dict, List, Tuple
@@ -15,6 +12,7 @@ import numpy as np
 import numpy.typing as npt
 import editdistance
 from sklearn.cluster import DBSCAN
+from sgt import SGT
 
 from time_per_region import get_roi_intervals
 
@@ -90,6 +88,18 @@ def encode_all_sessions(sequences: Dict[str, List[str]]) -> Dict[str, str]:
     }
 
 
+def sge_sessions(sequences: Dict[str, str]) -> pd.DataFrame:
+    sgt = SGT(kappa=1, flatten=True, lengthsensitive=False, mode="default")
+
+    seq_df = pd.DataFrame(
+        [[key, list(val)] for key, val in sequences.items()],
+        columns=["id", "sequence"],
+    )
+    sgt_df = sgt.fit_transform(seq_df)
+
+    return sgt_df
+
+
 def precompute_distance_matrix(sequences: Dict[str, List[str]]) -> npt.NDArray[np.int_]:
     """
     Precomputes the distance matrix using edit distance
@@ -104,7 +114,9 @@ def precompute_distance_matrix(sequences: Dict[str, List[str]]) -> npt.NDArray[n
     return distance_matrix
 
 
-def clustering(distance_matrix: npt.NDArray[np.int_]) -> npt.NDArray[np.int_]:
+def distance_matrix_clustering(
+    distance_matrix: npt.NDArray[np.int_],
+) -> npt.NDArray[np.int_]:
     """
     Returns the clusters of each row of the matrix
     """
@@ -113,19 +125,44 @@ def clustering(distance_matrix: npt.NDArray[np.int_]) -> npt.NDArray[np.int_]:
     return dbscan.fit_predict(distance_matrix)
 
 
+def embedding_clustering(sge_embeddings: pd.DataFrame) -> pd.DataFrame:
+    dbscan = DBSCAN(eps=0.3, min_samples=2, metric="euclidean")
+    labels = dbscan.fit_predict(sge_embeddings.drop(["id"], axis=1))
+
+    sge_embeddings["Cluster"] = labels
+
+    return sge_embeddings.drop(
+        [col for col in sge_embeddings.columns if col not in ["id", "Cluster"]],
+        axis=1,
+    )
+
+
 def map_cluster_to_session(
     encoded_sequences: Dict[str, str], clusters: npt.NDArray[np.int_]
 ) -> Dict[str, np.int_]:
     return dict(zip(encoded_sequences, clusters))
 
 
-def main():
+def edit_distance_clustering() -> Dict[str, int]:
     sequences = get_all_session_sequences("./sessions.yaml")
     encoded_sequences = encode_all_sessions(sequences)
     d_matrix = precompute_distance_matrix(encoded_sequences)
-    clusters = clustering(d_matrix)
+    clusters = distance_matrix_clustering(d_matrix)
     clustered_sessions = map_cluster_to_session(encoded_sequences, clusters)
-    print(clustered_sessions)
+
+    return clustered_sessions
+
+
+def sge_clustering() -> Dict[str, int]:
+    sequences = get_all_session_sequences("./sessions.yaml")
+    encoded_sequences = encode_all_sessions(sequences)
+    embeddings_df = sge_sessions(encoded_sequences)
+    embeddings_df = embedding_clustering(embeddings_df)
+    print(embeddings_df)
+
+
+def main():
+    sge_clustering()
 
 
 if __name__ == "__main__":
