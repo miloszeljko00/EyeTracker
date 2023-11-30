@@ -8,9 +8,9 @@ namespace Postprocessing.Interfaces
 {
     public interface IPythonScript
     {
-        string GetScriptPath();
+        string GetScriptPath(string scriptPath);
 
-        void CallScript(string csv_path, string sessionName);
+        void CallScript(string scriptName, string csv_path, string sessionName);
 
         string GetResultsPath(string sessionName);
     }

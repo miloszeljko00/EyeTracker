@@ -29,6 +29,7 @@ def plot_and_save_piechart(
 
 
 def main():
+    print ("Started region piechart script")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--csv_path", help="Path to csv from which the script will read"
@@ -37,10 +38,10 @@ def main():
     parser.add_argument("--session_name", help="Name of the recording session")
 
     args = parser.parse_args()
-
     df = load_csv(args.csv_path)
     data = get_regions_and_values(df)
     plot_and_save_piechart(data, args.save_path, args.session_name)
+    print ("Finished region piechart script")
 
 
 if __name__ == "__main__":

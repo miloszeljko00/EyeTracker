@@ -55,8 +55,9 @@ def plot_and_save_roi_sequence(
 
     plt.savefig(os.path.join(path, session_name + ".png"))
 
-
+    
 def main():
+    print("Started time per region script")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--csv_path", help="Path to csv from which the script will read"
@@ -72,6 +73,7 @@ def main():
     ints = get_roi_intervals(df)
     tpr = get_time_per_roi(df, ints)
     plot_and_save_roi_sequence(tpr, args.save_path, args.session_name)
+    print("Finished time per region script")
 
 
 if __name__ == "__main__":

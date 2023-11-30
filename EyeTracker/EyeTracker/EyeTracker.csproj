@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\GazepointClient\GazepointClient.csproj" />
+    <ProjectReference Include="..\Postprocessing\Postprocessing.csproj" />
     <ProjectReference Include="..\ScreenRecorder\ScreenRecorder.csproj" />
   </ItemGroup>
 

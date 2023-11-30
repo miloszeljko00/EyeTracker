@@ -137,7 +137,11 @@ namespace EyeTracker.Pages
 
         private void Statistics_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("EDIT");
+            var recording = (Models.Recording)RecordingsDataGrid.SelectedItem;
+            _recordingService.SelectedRecording = recording;
+            RecordingsDataGrid.UnselectAll();
+            var app = (App)Application.Current;
+            NavigationService.Navigate(app.ServiceProvider.GetService<RecordingStatisticsPage>());
             RefreshTable();
         }
         private void Delete_Button_Click(object sender, RoutedEventArgs e)

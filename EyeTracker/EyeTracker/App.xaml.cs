@@ -6,6 +6,8 @@ using GazepointClient.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Postprocessing.Interfaces;
+using Postprocessing.Services;
 using ScreenRecorder;
 using System;
 using System.Collections.Generic;
@@ -56,6 +58,7 @@ public partial class App : Application
         services.AddTransient<ProfilesPage>();
         services.AddTransient<ROIConfigsPage>();
         services.AddTransient<RecordingsPage>();
+        services.AddTransient<RecordingStatisticsPage>();
 
         //Services
         services.AddSingleton<EyeTrackerConfigService>();
@@ -63,6 +66,8 @@ public partial class App : Application
         services.AddSingleton<ROIConfigService>();
         services.AddSingleton<IGPClient, GPClient>();
         services.AddSingleton<RecordingService>();
+
+        services.AddSingleton<IPythonScript, PythonScript>();
     }
 
     private void OnStartup(object sender, StartupEventArgs e)

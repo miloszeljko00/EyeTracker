@@ -10,14 +10,14 @@ namespace Postprocessing.Services
 {
     public class PythonScript: IPythonScript
     {
-        public void CallScript(string csv_path, string sessionName)
+        public void CallScript(string scriptName, string csv_path, string sessionName)
         {
             var script = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "python",
-                    Arguments = $"{GetScriptPath()} --csv_path={csv_path} --save_path={GetRecordingStatisticsDirectoryPath()} --session_name={sessionName}",
+                    Arguments = $"{GetScriptPath(scriptName)} --csv_path={csv_path} --save_path={GetRecordingStatisticsDirectoryPath()} --session_name={sessionName}",
                     UseShellExecute = false,
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
@@ -28,7 +28,6 @@ namespace Postprocessing.Services
             script.Start();
             script.WaitForExit();
         }
-
         public string GetResultsPath(string sessionName)
         {
             string projectPath = GetPostprocessingProjectPath();
@@ -36,9 +35,9 @@ namespace Postprocessing.Services
             return Path.Join(projectPath, "recording_statistics", sessionName + ".png");
         }
 
-        public string GetScriptPath()
+        public string GetScriptPath(string scriptName)
         {
-            throw new NotImplementedException();
+            return Path.Join(GetPostprocessingProjectPath(), "Scripts", scriptName);
         }
 
         protected string GetPostprocessingProjectPath()
