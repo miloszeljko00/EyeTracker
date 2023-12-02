@@ -34,7 +34,7 @@ def plot_and_save_clusters(
 ) -> None:
     plt.scatter(coordinates[:, 0], coordinates[:, 1], c=dbscan.labels_, cmap="viridis")
 
-    plt.colorbar()
+    plt.colorbar(ticks=np.sort(np.unique(dbscan.labels_)))
     plt.grid()
 
     plt.ylabel("BPOGY")
