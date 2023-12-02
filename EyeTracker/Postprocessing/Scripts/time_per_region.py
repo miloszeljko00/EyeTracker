@@ -50,10 +50,10 @@ def plot_and_save_roi_sequence(
     plt.xlabel("ROI")
     plt.ylabel("Duration [s]")
     plt.title("ROI Sequence")
-    plt.xticks(positions, rois)
+    plt.xticks(positions, rois, rotation=90)
     plt.grid(visible=True)
 
-    plt.savefig(os.path.join(path, session_name + ".png"))
+    plt.savefig(os.path.join(path, session_name + ".png"), bbox_inches="tight")
 
 
 def main():
