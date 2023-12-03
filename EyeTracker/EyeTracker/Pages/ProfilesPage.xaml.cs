@@ -1,8 +1,10 @@
 ﻿using EyeTracker.Models;
 using EyeTracker.Services;
+using EyeTracker.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -61,12 +63,36 @@ namespace EyeTracker.Pages
 
         private void Edit_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("EDIT");
-            RefreshTable();
+            if (profileDataGrid.SelectedItem == null) return;
+
+            var profile = (Profile)profileDataGrid.SelectedItem;
+            _profileService.SelectedProfile = profile;
+            profileDataGrid.SelectedItem = null;
+
+            var app = (App)Application.Current;
+            var window = app.ServiceProvider.GetService<EditProfileWindow>();
+            if (window == null) return;
+            window.Owner = app.MainWindow;
+            window.Owner.Opacity = 0.5;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.ShowDialog();
+            window.Owner.Opacity = 1;
+            if (window.Profile.Name == "") return;
+            profileDataGrid.ItemsSource = _profileService.GetProfiles();
         }
         private void Delete_Button_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("DELETE");
+            if (sender is FrameworkElement element && element.DataContext is Profile p)
+            {
+                var result = MessageBox.Show("Confirm delete?", "Delete profile", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    var profile = (Models.Profile)profileDataGrid.SelectedItem;
+                    if (profile == null) return;
+                    _profileService.Delete(profile.Id);
+                    profileDataGrid.ItemsSource = _profileService.GetProfiles();
+                }
+            }
             RefreshTable();
         }
 
@@ -87,6 +113,20 @@ namespace EyeTracker.Pages
         {
             profileDataGrid.UnselectAll();
             profileDataGrid.Items.Refresh();
+        }
+
+        private void New_Profile_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var app = (App)Application.Current;
+            var window = app.ServiceProvider.GetService<CreateNewProfileWindow>();
+            if (window == null) return;
+            window.Owner = app.MainWindow;
+            window.Owner.Opacity = 0.5;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.ShowDialog();
+            window.Owner.Opacity = 1;
+            if (window.Profile.Name == "") return;
+            profileDataGrid.ItemsSource = _profileService.GetProfiles();
         }
     }
 }
