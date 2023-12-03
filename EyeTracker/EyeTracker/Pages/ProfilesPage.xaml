@@ -26,7 +26,7 @@
                 </StackPanel>
             </Button>
             <Label FontSize="32" Grid.Column="1" HorizontalAlignment="Center">Select profile</Label>
-            <Button Grid.Column="2" Width="150" Height="38" Cursor="Hand" Content="New"></Button>
+            <Button Grid.Column="2" Width="150" Height="38" Cursor="Hand" Content="New" Click="New_Profile_Button_Click"></Button>
         </Grid>
         <DataGrid Name="profileDataGrid" AutoGenerateColumns="False" FontSize="18" Margin="10,10,10,10" 
                   SelectionMode="Single" Grid.Row="1" HeadersVisibility="None" IsReadOnly="True" SelectionUnit="FullRow"

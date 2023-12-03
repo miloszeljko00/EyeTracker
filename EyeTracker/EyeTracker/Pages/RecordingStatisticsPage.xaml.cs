@@ -126,5 +126,31 @@ namespace EyeTracker.Pages
                 }
             }));
         }
+
+        private async void CoordinateClustering_Click(object sender, RoutedEventArgs e)
+        {
+            // Show spinner
+            Mouse.OverrideCursor = Cursors.Wait;
+
+            // Execute the script asynchronously
+            await Task.Run(() => _pythonScript.CallScript("coordinate_clustering.py", _recordingDataPath, Recording.Id.ToString() + "coordinate_clustering"));
+
+
+            // Update UI on the UI thread
+            await Dispatcher.BeginInvoke(new Action(() =>
+            {
+                // Hide the spinner
+                Mouse.OverrideCursor = null;
+
+                // Get the result path after the script execution
+                var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "coordinate_clustering");
+
+                // Update the UI with the result image
+                if (resultPath != null)
+                {
+                    ImageSource = new BitmapImage(new Uri(resultPath));
+                }
+            }));
+        }
     }
 }

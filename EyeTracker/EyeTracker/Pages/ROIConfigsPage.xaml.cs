@@ -103,12 +103,40 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
 
     private void Edit_Button_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("EDIT");
+        if (ROIConfigsDataGrid.SelectedItem == null) return;
+
+        var config = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
+        _roiConfigService.SelectedConfig = config;
+        ROIConfigsDataGrid.SelectedItem = null;
+
+        var app = (App)Application.Current;
+        var window = app.ServiceProvider.GetService<EditROIConfigWindow>();
+        if (window == null) return;
+        window.Owner = app.MainWindow;
+        window.Owner.Opacity = 0.5;
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        window.ShowDialog();
+        window.Owner.Opacity = 1;
+        if (window.ROIConfig.Name == "") return;
+        if (window.ROIConfig.ROIs.Count == 0) return;
+        ROIConfigs = new(_roiConfigService.GetROIConfigs());
+        ROIConfigsDataGrid.ItemsSource = ROIConfigs;
         RefreshTable();
     }
     private void Delete_Button_Click(object sender, RoutedEventArgs e)
     {
-        MessageBox.Show("DELETE");
+        if (sender is FrameworkElement element && element.DataContext is ROIConfig c)
+        {
+            var result = MessageBox.Show("Confirm delete?", "Delete roi config", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                var config = (ROIConfig)ROIConfigsDataGrid.SelectedItem;
+                if (config == null) return;
+                _roiConfigService.Delete(config.Id);
+                ROIConfigs = new(_roiConfigService.GetROIConfigs());
+                ROIConfigsDataGrid.ItemsSource = ROIConfigs;
+            }
+        }
         RefreshTable();
     }
 
@@ -124,6 +152,8 @@ public partial class ROIConfigsPage : Page, INotifyPropertyChanged
         window.Owner.Opacity = 1;
         if (window.ROIConfig.Name == "") return;
         if (window.ROIConfig.ROIs.Count == 0) return;
-        ROIConfigs.Add(window.ROIConfig);
+        ROIConfigs = new(_roiConfigService.GetROIConfigs());
+        ROIConfigsDataGrid.ItemsSource = ROIConfigs;
+        RefreshTable();
     }
 }

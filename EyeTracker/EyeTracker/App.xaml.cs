@@ -52,6 +52,9 @@ public partial class App : Application
         services.AddTransient<CreateROIConfigWindow>();
         services.AddTransient<TransparentOverlayWindow>();
         services.AddTransient<VideoPlayerWindow>();
+        services.AddTransient<CreateNewProfileWindow>();
+        services.AddTransient<EditProfileWindow>();
+        services.AddTransient<EditROIConfigWindow>();
 
         //Pages
         services.AddTransient<ConnectEyeTrackerPage>();

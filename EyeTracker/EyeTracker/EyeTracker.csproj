@@ -23,4 +23,16 @@
     <ProjectReference Include="..\ScreenRecorder\ScreenRecorder.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Windows\EditROIConfigWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\EditProfileWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\CreateNewProfileWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

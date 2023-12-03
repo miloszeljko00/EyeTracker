@@ -20,8 +20,9 @@
         <Button Cursor="Hand" Margin="20 10 20 10" Click="BackButton_Click" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="198">Back</Button>
 
         <StackPanel Grid.Row="0" Margin="0,10,0,10" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Click="RegionsPiechart_Click" Cursor="Hand" HorizontalAlignment="Center" Width="198" Margin="20,0,20,0">Regions piechart</Button>
-            <Button Click="TimePerRegion_Click"  Cursor="Hand" HorizontalAlignment="Center" Width="200" Margin="20,0,20,0">Time per region</Button>
+            <Button Click="RegionsPiechart_Click" Cursor="Hand" HorizontalAlignment="Center" Width="175" Margin="5,0,5,0">Regions piechart</Button>
+            <Button Click="TimePerRegion_Click"  Cursor="Hand" HorizontalAlignment="Center" Width="175" Margin="5,0,5,0">Time per region</Button>
+            <Button Click="CoordinateClustering_Click"  Cursor="Hand" HorizontalAlignment="Center" Width="175" Margin="5,0,5,0">Coordinate clustering</Button>
         </StackPanel>
 
         <Image Source="{Binding ImageSource}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
