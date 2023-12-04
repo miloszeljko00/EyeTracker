@@ -80,16 +80,8 @@ namespace EyeTracker.Pages
             // Show spinner
             Mouse.OverrideCursor = Cursors.Wait;
 
-            // Execute the script asynchronously
-            await Task.Run(() => _pythonScript.CallScript("region_piechart.py", _recordingDataPath, Recording.Id.ToString() + "region_piechart"));
-
-
-            // Update UI on the UI thread
-            await Dispatcher.BeginInvoke(new Action(() =>
+            try
             {
-                // Hide the spinner
-                Mouse.OverrideCursor = null;
-
                 // Get the result path after the script execution
                 var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "region_piechart");
 
@@ -98,7 +90,33 @@ namespace EyeTracker.Pages
                 {
                     ImageSource = new BitmapImage(new Uri(resultPath));
                 }
-            }));
+
+                // Hide the spinner
+                Mouse.OverrideCursor = null;
+
+            }
+            catch (Exception ex)
+            {
+                // Execute the script asynchronously
+                await Task.Run(() => _pythonScript.CallScript("region_piechart.py", _recordingDataPath, Recording.Id.ToString() + "region_piechart"));
+
+
+                // Update UI on the UI thread
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    // Hide the spinner
+                    Mouse.OverrideCursor = null;
+
+                    // Get the result path after the script execution
+                    var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "region_piechart");
+
+                    // Update the UI with the result image
+                    if (resultPath != null)
+                    {
+                        ImageSource = new BitmapImage(new Uri(resultPath));
+                    }
+                }));
+            }
         }
 
         private async void TimePerRegion_Click(object sender, RoutedEventArgs e)
@@ -106,17 +124,8 @@ namespace EyeTracker.Pages
             // Show spinner
             Mouse.OverrideCursor = Cursors.Wait;
 
-            // Execute the script asynchronously
-            await Task.Run(() => _pythonScript.CallScript("time_per_region.py", _recordingDataPath, Recording.Id.ToString() + "time_per_region"));
-
-
-            // Update UI on the UI thread
-            await Dispatcher.BeginInvoke(new Action(() =>
+            try
             {
-                // Hide the spinner
-                Mouse.OverrideCursor = null;
-
-                // Get the result path after the script execution
                 var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "time_per_region");
 
                 // Update the UI with the result image
@@ -124,7 +133,32 @@ namespace EyeTracker.Pages
                 {
                     ImageSource = new BitmapImage(new Uri(resultPath));
                 }
-            }));
+
+                // Hide the spinner
+                Mouse.OverrideCursor = null;
+            }
+            catch(Exception ex)
+            {
+                // Execute the script asynchronously
+                await Task.Run(() => _pythonScript.CallScript("time_per_region.py", _recordingDataPath, Recording.Id.ToString() + "time_per_region"));
+
+
+                // Update UI on the UI thread
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    // Hide the spinner
+                    Mouse.OverrideCursor = null;
+
+                    // Get the result path after the script execution
+                    var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "time_per_region");
+
+                    // Update the UI with the result image
+                    if (resultPath != null)
+                    {
+                        ImageSource = new BitmapImage(new Uri(resultPath));
+                    }
+                }));
+            }
         }
 
         private async void CoordinateClustering_Click(object sender, RoutedEventArgs e)
@@ -132,25 +166,39 @@ namespace EyeTracker.Pages
             // Show spinner
             Mouse.OverrideCursor = Cursors.Wait;
 
-            // Execute the script asynchronously
-            await Task.Run(() => _pythonScript.CallScript("coordinate_clustering.py", _recordingDataPath, Recording.Id.ToString() + "coordinate_clustering"));
-
-
-            // Update UI on the UI thread
-            await Dispatcher.BeginInvoke(new Action(() =>
+            try
             {
-                // Hide the spinner
-                Mouse.OverrideCursor = null;
-
-                // Get the result path after the script execution
                 var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "coordinate_clustering");
-
-                // Update the UI with the result image
+                
                 if (resultPath != null)
                 {
                     ImageSource = new BitmapImage(new Uri(resultPath));
                 }
-            }));
+
+                // Hide the spinner
+                Mouse.OverrideCursor = null;
+            }
+            catch(Exception ex)
+            {
+                // Execute the script asynchronously
+                await Task.Run(() => _pythonScript.CallScript("coordinate_clustering.py", _recordingDataPath, Recording.Id.ToString() + "coordinate_clustering"));
+
+                // Update UI on the UI thread
+                await Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    // Hide the spinner
+                    Mouse.OverrideCursor = null;
+
+                    // Get the result path after the script execution
+                    var resultPath = _pythonScript.GetResultsPath(Recording.Id.ToString() + "coordinate_clustering");
+
+                    // Update the UI with the result image
+                    if (resultPath != null)
+                    {
+                        ImageSource = new BitmapImage(new Uri(resultPath));
+                    }
+                }));
+            }
         }
     }
 }

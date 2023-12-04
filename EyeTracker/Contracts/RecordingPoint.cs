@@ -11,7 +11,7 @@ namespace Contracts
         public int Order { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
-        public long Timestamp { get; set; }
+        public double Timestamp { get; set; }
         public string Label { get; set; } = string.Empty;
     }
 }

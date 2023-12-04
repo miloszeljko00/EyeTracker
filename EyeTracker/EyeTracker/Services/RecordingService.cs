@@ -88,8 +88,8 @@ public class RecordingService
                     if (line == null) continue;
                     var values = line.Split(',');
 
-                    var xPercentage = double.Parse(values[2]) / 100000D;
-                    var yPercentage = double.Parse(values[3]) / 100000D;
+                    var xPercentage = double.Parse(values[2]);
+                    var yPercentage = double.Parse(values[3]);
                     Screen primaryScreen = Screen.PrimaryScreen;
                     int screenWidth = primaryScreen.Bounds.Width;
                     int screenHeight = primaryScreen.Bounds.Height;
@@ -98,7 +98,7 @@ public class RecordingService
                     {
                         Id = Guid.NewGuid(),
                         Order = int.Parse(values[0]),
-                        Timestamp = long.Parse(values[1]),
+                        Timestamp = double.Parse(values[1]),
                         X = xPercentage * screenWidth,
                         Y = yPercentage * screenHeight,
                         Label = values[11],
@@ -182,7 +182,7 @@ public class RecordingService
         {
             roiContracts.Add(new Contracts.ROI()
             {
-                Id = roisItem.Id.ToString(),
+                Id = roisItem.Name,
                 Points = FromROIPointToContractPoints(roisItem.Points),
             });
         }
