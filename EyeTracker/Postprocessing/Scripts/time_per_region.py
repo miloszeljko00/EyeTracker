@@ -41,8 +41,7 @@ def plot_and_save_roi_sequence(
     time_per_roi: List[Tuple[str, int]], path: str, session_name: str
 ) -> None:
     rois = [pair[0] for pair in time_per_roi]
-    durations = [pair[1] for pair in time_per_roi]
-
+    durations = [pair[1] / 10000.0 for pair in time_per_roi]
     positions = np.arange(len(rois))
     width = 0.5
 

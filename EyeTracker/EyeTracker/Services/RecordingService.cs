@@ -167,8 +167,8 @@ public class RecordingService
             {
                 Order = point.Order,
                 Timestamp = point.Timestamp,
-                X = point.X,
-                Y = point.Y,
+                X = point.X / 100000D,
+                Y = point.Y / 100000D,
                 Label = point.Label,
             });
         }

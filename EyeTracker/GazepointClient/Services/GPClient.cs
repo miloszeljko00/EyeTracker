@@ -91,7 +91,7 @@ namespace GazepointClient.Services
                             GazepointReader.ParseIncomingDataLine(incoming_data);
 
                             POG_Best pogBest = (POG_Best)GazepointReader.SignalObjectsDict["ENABLE_SEND_POG_BEST"].Last();
-                            Point eyeCoordinates = Point.FractionCoordinatesToAbsoluteCoordinates(new Point(pogBest.BPOGX, pogBest.BPOGY), eyeTrackerConfig.ScreenWidth, eyeTrackerConfig.ScreenHeight);
+                            Point eyeCoordinates = Point.FractionCoordinatesToAbsoluteCoordinates(new Point(pogBest.BPOGX / 100000D, pogBest.BPOGY / 100000D), eyeTrackerConfig.ScreenWidth, eyeTrackerConfig.ScreenHeight);
                             GazepointReader.SignalObjectsDict["ROI_LABEL"].Add(new ROI_Label { Label = pointLabeler.LabelSignalObjectsData(eyeCoordinates, eyeTrackerConfig.ScreenHeight, eyeTrackerConfig.ScreenWidth) });
                         }
 

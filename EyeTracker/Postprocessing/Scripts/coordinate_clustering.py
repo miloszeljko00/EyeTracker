@@ -14,6 +14,7 @@ def load_csv(path: str) -> pd.DataFrame:
 
 def extract_coordinates(df: pd.DataFrame) -> npt.NDArray[np.float_]:
     df = df[["BPOGX", "BPOGY"]]
+    df[["BPOGX", "BPOGY"]] = df[["BPOGX", "BPOGY"]].astype(np.float_) / 100000.0
     mask = (
         (df["BPOGX"] >= 0.0)
         & (df["BPOGX"] <= 1.0)
